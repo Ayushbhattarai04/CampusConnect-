@@ -25,7 +25,7 @@ const LoggedOut = () => {
       }}
     >
       {/* Overlay for better readability */}
-      <div className="absolute inset-0 bg-linear-to-b from-blue-900/40 via-purple-900/30 to-gray-900/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-purple-900/30 to-gray-900/50"></div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
