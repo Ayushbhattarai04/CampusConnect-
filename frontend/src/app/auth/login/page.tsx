@@ -51,8 +51,14 @@ export default function Login() {
       );
 
       if (response.status === 200) {
-        // Save token to localStorage
-        localStorage.setItem("token", response.data.token);
+        // Save token based on "Remember Me"
+        if (rememberMe) {
+          localStorage.setItem("token", response.data.token);
+          sessionStorage.removeItem("token");
+        } else {
+          sessionStorage.setItem("token", response.data.token);
+          localStorage.removeItem("token");
+        }
 
         // Save user data if needed
         localStorage.setItem("user", JSON.stringify(response.data.user));

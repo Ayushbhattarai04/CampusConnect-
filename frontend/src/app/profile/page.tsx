@@ -1,5 +1,4 @@
 "use client";
-import AuthGuard from "../AuthGaurd";
 
 export default function Page() {
   return (
