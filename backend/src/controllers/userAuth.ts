@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import nodemailer from "nodemailer";
+import sequelize from "../config/database";
 
 export const register = async (req: Request, res: Response) => {
+  const t = await sequelize.transaction();
   try {
     const { username, email, password, institution, studId } = req.body;
 
@@ -33,25 +36,46 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Username already taken" });
     }
 
-    // Create user
-    const user = await User.create({
-      username,
-      email,
-      password,
-      institution: institution || null,
-      studId: studId || null,
-    });
-
-    // Generate token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: "7d" },
+    // Create user inside transaction
+    const user = await User.create(
+      {
+        username,
+        email,
+        password,
+        institution: institution || null,
+        studId: studId || null,
+      },
+      { transaction: t },
     );
 
+    const verificationToken = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1d" },
+    );
+
+    // Setup transporter
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const verificationUrl = `http://localhost:5000/api/auth/verify/${verificationToken}`;
+    await transporter.sendMail({
+      to: user.email,
+      subject: "Verify your email",
+      html: `<a href="${verificationUrl}">Click here to verify your email</a>`,
+    });
+
+    await t.commit();
     res.status(201).json({
-      message: "User registered successfully",
-      token,
+      message:
+        "Registration successful! Check your email to verify your account.",
+      token: verificationToken,
       user: {
         id: user.id,
         username: user.username,
@@ -61,8 +85,9 @@ export const register = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
+    await t.rollback();
     console.error("Registration error:", error);
-    res.status(500).json({ message: "Server error during registration" });
+    res.status(500).json({ message: "Registration failed. Please try again." });
   }
 };
 
@@ -81,14 +106,20 @@ export const login = async (req: Request, res: Response) => {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
     // Check password
-    const isPasswordValid = await user.comparePassword(password);
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
 
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
+    // Check if user is verified
+    if (!user.verified) {
+      return res
+        .status(401)
+        .json({ error: "Please verify your email before logging in." });
     }
 
     // Generate token
@@ -117,7 +148,8 @@ export const login = async (req: Request, res: Response) => {
 
 export const getProfile = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.userId;
+    // Fix: TypeScript does not know req.user exists, so cast req as any
+    const userId = (req as any).user?.userId;
 
     const user = await User.findByPk(userId, {
       attributes: { exclude: ["password"] },

@@ -1,6 +1,6 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
-import bcrypt from 'bcrypt';
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../config/database";
+import bcrypt from "bcrypt";
 
 interface UserAttributes {
   id: number;
@@ -9,18 +9,25 @@ interface UserAttributes {
   institution?: string | null;
   studId?: string | null;
   password: string;
+  verified: boolean;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'institution' | 'studId'> {}
+interface UserCreationAttributes extends Optional<
+  UserAttributes,
+  "id" | "institution" | "studId" | "verified"
+> {}
 
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+class User
+  extends Model<UserAttributes, UserCreationAttributes>
+  implements UserAttributes
+{
   public id!: number;
   public username!: string;
   public email!: string;
   public institution!: string | null;
   public studId!: string | null;
   public password!: string;
-
+  public verified!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -62,10 +69,15 @@ User.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    verified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   },
   {
     sequelize,
-    tableName: 'users',
+    tableName: "users",
     timestamps: true,
     hooks: {
       beforeCreate: async (user: User) => {
@@ -75,13 +87,13 @@ User.init(
         }
       },
       beforeUpdate: async (user: User) => {
-        if (user.changed('password')) {
+        if (user.changed("password")) {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);
         }
       },
     },
-  }
+  },
 );
 
 export default User;
