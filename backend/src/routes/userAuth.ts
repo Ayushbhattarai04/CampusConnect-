@@ -1,11 +1,14 @@
-import { Router } from "express";
-import { registerUser, loginUser, getProfile } from "../controller/userAuth";
-import { authenticate } from "../middleware/userAuth";
+import express from 'express';
+import { register, login, getProfile } from '../controllers/userAuth';
+import { authenticateToken } from '../middleware/userAuth';
 
-const router = Router();
+const router = express.Router();
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.get("/profile", authenticate, getProfile);
+// Public routes
+router.post('/register', register);
+router.post('/login', login);
+
+// Protected routes
+router.get('/profile', authenticateToken, getProfile);
 
 export default router;
