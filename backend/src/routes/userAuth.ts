@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, getProfile } from "../controllers/userAuth";
+import { register, login } from "../controllers/userAuth";
 import { authenticateToken } from "../middleware/userAuth";
 import User from "../models/User";
 import jwt from "jsonwebtoken";
@@ -9,8 +9,7 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 
-//Protected route
-router.get("/profile", authenticateToken, getProfile);
+// Profile route removed
 
 router.get("/verify/:token", async (req, res) => {
   try {

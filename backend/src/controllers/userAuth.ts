@@ -145,23 +145,3 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error during login" });
   }
 };
-
-export const getProfile = async (req: Request, res: Response) => {
-  try {
-    // Fix: TypeScript does not know req.user exists, so cast req as any
-    const userId = (req as any).user?.userId;
-
-    const user = await User.findByPk(userId, {
-      attributes: { exclude: ["password"] },
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json({ user });
-  } catch (error) {
-    console.error("Profile fetch error:", error);
-    res.status(500).json({ message: "Server error fetching profile" });
-  }
-};

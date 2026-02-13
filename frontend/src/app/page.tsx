@@ -24,7 +24,7 @@ export default function Home() {
             onSelectSection={setSelectedSection}
           />
           <main
-            className={`flex-1 transition-all duration-500 p-4 ${sidebarOpen ? "ml-53" : "ml-16"}`}
+            className={`flex-1 transition-all duration-500 p-auto ${sidebarOpen ? "ml-53" : "ml-16 "}`}
           >
             {selectedSection === "Feed" && <Feed />}
             {selectedSection === "Communities" && (

@@ -6,28 +6,7 @@ import createPost from "../posts/page";
 import Link from "next/link";
 
 export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
-  const [localUsername, setLocalUsername] = useState("Profile");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUsername = localStorage.getItem("username");
-      console.log("Navbar localStorage username:", storedUsername);
-      if (storedUsername) setLocalUsername(storedUsername);
-    }
-  }, []);
-
-  const handleProfileClick = () => {
-    console.log("Profile button clicked, username:", localUsername);
-    if (
-      localUsername &&
-      localUsername !== "Profile" &&
-      localUsername !== "undefined"
-    ) {
-      window.location.href = `/profile/${encodeURIComponent(localUsername)}`;
-    } else {
-      alert("You are not logged in!");
-    }
-  };
+  // Profile logic removed
 
   return (
     <nav className="bg-violet-800 p-2 fixed w-full top-0 left-0 z-12 pt-14 shadow-lg border-gray-400">
@@ -66,16 +45,8 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
         <div className="space-x-4 fixed top-4  right-140 flex items-center">
           <Search className="h-6 w-6 text-white cursor-pointer" />
         </div>
-
-        {/* Createpost area */}
-        <div className="fixed right-10 top-4">
-          <button
-            className="text-white hover:text-gray-500"
-            onClick={handleProfileClick}
-          >
-            {localUsername}
-          </button>
-        </div>
+      
+        {/* Profile button removed */}
       </div>
     </nav>
   );

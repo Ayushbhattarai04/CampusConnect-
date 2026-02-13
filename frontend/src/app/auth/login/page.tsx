@@ -62,7 +62,7 @@ export default function Login() {
 
         // Save user data if needed
         localStorage.setItem("user", JSON.stringify(response.data.user));
-        // Save username for Navbar/profile
+        // Save username for Navbar
         if (response.data.user && response.data.user.username) {
           localStorage.setItem("username", response.data.user.username);
         }

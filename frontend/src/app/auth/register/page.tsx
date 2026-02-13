@@ -78,7 +78,7 @@ export default function Register() {
 
       // Save token to localStorage
       localStorage.setItem("token", response.data.token);
-      // Save username for Navbar/profile
+      // Save username for Navbar
       if (response.data.user && response.data.user.username) {
         localStorage.setItem("username", response.data.user.username);
       }
@@ -86,7 +86,7 @@ export default function Register() {
       setSuccessMessage("Registration successful! Redirecting...");
 
       setTimeout(() => {
-        router.push("auth/login");
+        router.push("/login");
       }, 1500);
     } catch (error: any) {
       let errorMessage = "Registration failed";
