@@ -62,6 +62,10 @@ export default function Login() {
 
         // Save user data if needed
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        // Save username for Navbar/profile
+        if (response.data.user && response.data.user.username) {
+          localStorage.setItem("username", response.data.user.username);
+        }
 
         // Redirect to home/dashboard
         router.push("/");

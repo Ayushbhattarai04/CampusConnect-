@@ -78,6 +78,10 @@ export default function Register() {
 
       // Save token to localStorage
       localStorage.setItem("token", response.data.token);
+      // Save username for Navbar/profile
+      if (response.data.user && response.data.user.username) {
+        localStorage.setItem("username", response.data.user.username);
+      }
 
       setSuccessMessage("Registration successful! Redirecting...");
 
