@@ -1,8 +1,14 @@
+import "./models/User";
+import "./models/Posts";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/database";
 import authRoutes from "./routes/userAuth";
+import postsRoutes from "./routes/posts";
+import commentsRoutes from "./routes/comments";
+import likesRoutes from "./routes/likes";
+import "./models/Comments";
 
 dotenv.config();
 
@@ -15,6 +21,9 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/post", postsRoutes);
+app.use("/api/comments", commentsRoutes);
+app.use("/api/likes", likesRoutes);
 
 // Test route
 app.get("/", (req, res) => {
