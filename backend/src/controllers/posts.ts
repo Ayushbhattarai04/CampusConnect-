@@ -6,9 +6,15 @@ import User from "../models/User";
 export const createPost = async (req: Request, res: Response) => {
   try {
     const { userId, content, imageUrl } = req.body;
+    console.log("Create post request:", req.body);
     const post = await Post.create({ userId, content, imageUrl });
-    res.status(201).json(post);
+    // Fetch the post again with the associated User (for username)
+    const postWithUser = await Post.findByPk(post.postId, {
+      include: [{ model: User, attributes: ["username"] }],
+    });
+    res.status(201).json(postWithUser);
   } catch (error) {
+    console.error("Create post error:", error);
     res.status(500).json({ error: "Failed to create post" });
   }
 };
@@ -46,7 +52,8 @@ export const deletePost = async (req: Request, res: Response) => {
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.findAll({
-      include: [{ model: User, attributes: ["username"] }]
+      include: [{ model: User, attributes: ["username"] }],
+      order: [["createdAt", "DESC"]],
     });
     res.json(posts);
   } catch (error) {

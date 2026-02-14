@@ -59,6 +59,6 @@ Like.init(
     modelName: "Like",
   },
 );
-Like.belongsTo(User, { foreignKey: "userId" });
-Like.belongsTo(Post, { foreignKey: "postId" });
+Like.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
+Like.belongsTo(Post, { foreignKey: "postId", onDelete: "CASCADE" });
 export default Like;

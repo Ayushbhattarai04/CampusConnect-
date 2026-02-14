@@ -1,3 +1,16 @@
+import User from "../models/User";
+// Get all comments with username
+export const getAllComments = async (req: Request, res: Response) => {
+  try {
+    const comments = await Comment.findAll({
+      include: [{ model: User, attributes: ["username"] }],
+      order: [["createdAt", "DESC"]],
+    });
+    res.json(comments);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch comments" });
+  }
+};
 import { Request, Response } from "express";
 import Comment from "../models/Comments";
 
@@ -6,7 +19,11 @@ export const createComment = async (req: Request, res: Response) => {
   try {
     const { userId, postId, content } = req.body;
     const comment = await Comment.create({ userId, postId, content });
-    res.status(201).json(comment);
+    // Fetch the comment again with the associated User (for username)
+    const commentWithUser = await Comment.findByPk(comment.commentId, {
+      include: [{ model: User, attributes: ["username"] }],
+    });
+    res.status(201).json(commentWithUser);
   } catch (error) {
     res.status(500).json({ error: "Failed to create comment" });
   }

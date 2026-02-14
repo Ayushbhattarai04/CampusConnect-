@@ -65,6 +65,6 @@ Post.init(
   },
 );
 
-Post.belongsTo(User, { foreignKey: "userId" });
+Post.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 
 export default Post;

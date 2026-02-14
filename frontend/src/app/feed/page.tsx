@@ -1,247 +1,318 @@
+"use client";
 import React, { useState } from "react";
-import { Heart, MessageCircle, Plus, X, Send } from "lucide-react";
+import { MessageCircle, Plus, X } from "lucide-react";
+
+type Post = {
+  postId: number | string;
+  userId: number | string;
+  content: string;
+  imageUrl?: string;
+  createdAt?: string;
+  User?: {
+    username?: string;
+  };
+};
+
+import { useEffect } from "react";
+
+type Comment = {
+  commentId: number | string;
+  userId: number | string;
+  postId: number | string;
+  content: string;
+  createdAt?: string;
+  User?: {
+    username?: string;
+  };
+};
 
 const Feed = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [activePostId, setActivePostId] = useState<number | string | null>(
+    null,
+  );
+  const [newComment, setNewComment] = useState("");
+  const [likes, setLikes] = useState<any[]>([]);
 
-  // Dummy posts data for layout
-  const posts = [
-    {
-      id: 1,
-      userId: 1,
-      title: "My first post",
-      body: "This is the content of my first post. I'm excited to share this with everyone!",
-      likes: 42,
-      liked: false,
-      commentCount: 5,
-    },
-    {
-      id: 2,
-      userId: 2,
-      title: "Another amazing day",
-      body: "Just wanted to share some thoughts about this wonderful day. The weather is great and I'm feeling productive!",
-      likes: 18,
-      liked: true,
-      commentCount: 3,
-    },
-    {
-      id: 3,
-      userId: 3,
-      title: "Learning something new",
-      body: "Today I learned about React hooks and state management. It's fascinating how everything works together!",
-      likes: 67,
-      liked: false,
-      commentCount: 12,
-    },
-  ];
+  const userData =
+    typeof window !== "undefined" ? localStorage.getItem("user") : null;
+  let userId = "";
+  let username = "";
+  if (userData) {
+    try {
+      const parsed = JSON.parse(userData);
+      userId = parsed.id;
+      username = parsed.username;
+    } catch {}
+  }
 
-  // Dummy comments for the modal
-  const comments = [
-    {
-      id: 1,
-      name: "John Doe",
-      body: "This is a great post! Thanks for sharing.",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      body: "I completely agree with this perspective.",
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      body: "Very insightful, looking forward to more content like this.",
-    },
-  ];
+  // Fetch posts on mount
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/post/");
+        if (res.ok) {
+          const data = await res.json();
+          setPosts(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch posts:", err);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  // form state
+  const [newPost, setNewPost] = useState({
+    content: "",
+    imageUrl: "",
+  });
+
+  // CREATE POST
+  const handleSubmitPost = async () => {
+    if (!newPost.content.trim()) return;
+    try {
+      const response = await fetch("http://localhost:5000/api/post/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          username,
+          content: newPost.content,
+          imageUrl: newPost.imageUrl,
+        }),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Failed to create post:", errorText);
+        return;
+      }
+      const createdPost = await response.json();
+      setPosts((prev) => [createdPost, ...prev]);
+      setNewPost({ content: "", imageUrl: "" });
+      setShowCreateModal(false);
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
+  };
+
+  // Helper to fetch all comments (could be optimized to fetch only for a post)
+  const fetchComments = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/comments/");
+      if (res.ok) {
+        const data = await res.json();
+        setComments(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch comments:", err);
+    }
+  };
+
+  const handleSubmitComment = async (postId: number | string) => {
+    if (!newComment.trim()) return;
+    try {
+      const response = await fetch("http://localhost:5000/api/comments/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          username,
+          postId,
+          content: newComment,
+        }),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Failed to create comment:", errorText);
+        return;
+      }
+      setNewComment("");
+      await fetchComments(); 
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchComments();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
+      {/* HEADER */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-gray-900">Feed</h1>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-3xl mx-auto px-4 py-6">
-        <div className="space-y-4">
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
-            >
-              {/* Post Header */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
-                  {post.userId}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">
-                    User {post.userId}
-                  </p>
-                  <p className="text-sm text-gray-500">Just now</p>
-                </div>
+      {/* POSTS */}
+      <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+        {posts.map((post: any) => (
+          <div key={post.postId} className="bg-white rounded-xl shadow-sm p-6">
+            {/* USER */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
+                {post.User?.username?.charAt(0).toUpperCase() ||
+                  post.username?.charAt(0).toUpperCase() ||
+                  "U"}
               </div>
-
-              {/* Post Content */}
-              <h2 className="text-xl font-bold text-gray-900 mb-2 capitalize">
-                {post.title}
-              </h2>
-              <p className="text-gray-700 mb-4">{post.body}</p>
-
-              {/* Post Actions */}
-              <div className="flex items-center gap-6 pt-4 border-t">
-                <button
-                  className={`flex items-center gap-2 transition-colors ${
-                    post.liked
-                      ? "text-red-600"
-                      : "text-gray-600 hover:text-red-600"
-                  }`}
-                >
-                  <Heart
-                    size={20}
-                    className={post.liked ? "fill-current" : ""}
-                  />
-                  <span className="font-medium">{post.likes}</span>
-                </button>
-
-                <button
-                  onClick={() => setShowCommentModal(true)}
-                  className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-                >
-                  <MessageCircle size={20} />
-                  <span className="font-medium">{post.commentCount}</span>
-                </button>
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {post.User?.username ||
+                    post.username ||
+                    `User ${post.userId}`}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {post.createdAt
+                    ? new Date(post.createdAt).toLocaleString()
+                    : ""}
+                </p>
               </div>
             </div>
-          ))}
-        </div>
+            {/* CONTENT */}
+            <p className="text-gray-700 mb-4">{post.content}</p>
+            {/* IMAGE */}
+            {post.imageUrl && (
+              <img
+                src={post.imageUrl}
+                alt="Post"
+                className="max-w-full rounded-lg mb-4"
+              />
+            )}
+            {/* ACTIONS */}
+            <div className="flex items-center gap-4 pt-4 border-t mt-4">
+              <button
+                className="flex items-center gap-2 text-gray-600 hover:text-blue-600"
+                onClick={() => {
+                  setActivePostId(post.postId);
+                  setShowCommentModal(true);
+                }}
+              >
+                <MessageCircle size={20} />
+                Comment
+              </button>
+            </div>
+            {/* COMMENTS MODAL */}
+            {showCommentModal && activePostId === post.postId && (
+              <div className="fixed inset-0 bg-white/10 backdrop-blur-md flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl max-w-lg w-full p-6">
+                  {/* MODAL HEADER */}
+                  <div className="flex justify-between mb-6">
+                    <h2 className="text-2xl font-bold">Comments</h2>
+                    <button onClick={() => setShowCommentModal(false)}>
+                      <X size={24} />
+                    </button>
+                  </div>
+                  {/* COMMENT LIST */}
+                  <div className="space-y-4 max-h-60 overflow-y-auto">
+                    {comments
+                      .filter((c) => c.postId === post.postId)
+                      .map((comment) => (
+                        <div
+                          key={comment.commentId}
+                          className="bg-gray-100 rounded-lg p-4"
+                        >
+                          <p className="font-semibold text-gray-900">
+                            {comment.User?.username || `User ${comment.userId}`}
+                          </p>
+                          <p className="text-gray-700">{comment.content}</p>
+                          <p className="text-sm text-gray-500">
+                            {comment.createdAt
+                              ? new Date(comment.createdAt).toLocaleString()
+                              : ""}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                  {/* ADD COMMENT FORM */}
+                  <div className="flex gap-2 mt-4">
+                    <input
+                      type="text"
+                      placeholder="Add a comment..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      className="flex-1 px-3 py-2 border rounded-lg"
+                    />
+                    <button
+                      onClick={() => handleSubmitComment(post.postId)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                    >
+                      Post
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
-      {/* Floating Create Button */}
+      {/* FLOATING CREATE BUTTON */}
       <button
         onClick={() => setShowCreateModal(true)}
-        className="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center"
+        className="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 flex items-center justify-center"
       >
         <Plus size={28} />
       </button>
 
-      {/* Create Post Modal */}
+      {/* CREATE POST MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-md  flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white/10 backdrop-blur-md flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Create Post</h2>
+            {/* MODAL HEADER */}
+            <div className="flex justify-between mb-6">
+              <h2 className="text-2xl font-bold">Create Post</h2>
+              <button onClick={() => setShowCreateModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* CONTENT */}
+            <textarea
+              placeholder="What's on your mind?"
+              rows={5}
+              value={newPost.content}
+              onChange={(e) =>
+                setNewPost({ ...newPost, content: e.target.value })
+              }
+              className="w-full px-4 py-3 border rounded-lg mb-4"
+            />
+
+            {/* IMAGE URL */}
+            <input
+              type="text"
+              placeholder="Paste image URL (optional)"
+              value={newPost.imageUrl}
+              onChange={(e) =>
+                setNewPost({ ...newPost, imageUrl: e.target.value })
+              }
+              className="w-full px-4 py-3 border rounded-lg mb-4"
+            />
+
+            {/* ACTIONS */}
+            <div className="flex gap-3">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition"
+                className="flex-1 border rounded-lg py-3"
               >
-                <X size={24} />
+                Cancel
               </button>
-            </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter post title..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Content
-                </label>
-                <textarea
-                  placeholder="What's on your mind?"
-                  rows={5}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => setShowCreateModal(false)}
-                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
-                >
-                  Cancel
-                </button>
-                <button className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-                  Post
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Comments Modal */}
-      {showCommentModal && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-md  flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-black border-b">
-              <h2 className="text-2xl font-bold text-gray-900">Comments</h2>
               <button
-                onClick={() => setShowCommentModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition"
+                onClick={handleSubmitPost}
+                className="flex-1 bg-blue-600 text-white rounded-lg py-3"
               >
-                <X size={24} />
+                Post
               </button>
-            </div>
-
-            {/* Post Preview */}
-            <div className="p-6 border-b bg-gray-50">
-              <h3 className="font-bold text-gray-900 mb-2 capitalize">
-                My first post
-              </h3>
-              <p className="text-gray-700 text-sm">
-                This is the content of my first post. I'm excited to share this
-                with everyone!
-              </p>
-            </div>
-
-            {/* Comments List */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="space-y-4">
-                {comments.map((comment) => (
-                  <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                        {comment.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900 text-sm">
-                          {comment.name}
-                        </p>
-                        <p className="text-gray-700 text-sm mt-1">
-                          {comment.body}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Add Comment */}
-            <div className="p-6 border-t">
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  placeholder="Write a comment..."
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <button className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-                  <Send size={20} />
-                </button>
-              </div>
             </div>
           </div>
         </div>
