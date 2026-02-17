@@ -8,6 +8,7 @@ interface LikeAttributes {
   userId: number;
   postId: number;
   createdAt?: Date;
+  updatedAt?: Date;
 }
 
 type LikeCreationAttributes = Optional<LikeAttributes, "likeId">;
@@ -20,6 +21,7 @@ class Like
   userId!: number;
   postId!: number;
   createdAt!: Date;
+  updatedAt!: Date;
 }
 
 Like.init(
@@ -49,6 +51,11 @@ Like.init(
     },
 
     createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,

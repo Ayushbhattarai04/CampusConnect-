@@ -88,7 +88,7 @@ export default function Sidebar({
         </li>
 
         <li
-          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2 pt-70"
+          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2 mt-70"
           onClick={() => {
             if (typeof onSelectSection === "function")
               onSelectSection("Settings");
@@ -101,7 +101,7 @@ export default function Sidebar({
           
         </li>
         {open && (
-          <li>
+          <li className="mt-30">
             <h6 className="text-blue-600 text-sm"> © Campus Connect 2026</h6>
           </li>
         )}

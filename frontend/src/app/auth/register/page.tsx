@@ -86,7 +86,7 @@ export default function Register() {
       setSuccessMessage("Registration successful! Redirecting...");
 
       setTimeout(() => {
-        router.push("/login");
+        router.push("/auth/login");
       }, 1500);
     } catch (error: any) {
       let errorMessage = "Registration failed";

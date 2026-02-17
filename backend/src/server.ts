@@ -1,5 +1,6 @@
 import "./models/User";
 import "./models/Posts";
+import "./models/Likes";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
