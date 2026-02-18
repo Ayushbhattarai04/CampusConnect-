@@ -1,26 +1,49 @@
-import React, { useState } from "react";
-import { 
-  Shield, Palette, Moon, Sun, 
-  Monitor, Key, Trash2, Download, 
-  Eye, EyeOff, LogOut, ChevronRight
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  Shield,
+  Palette,
+  Moon,
+  Sun,
+  Monitor,
+  Key,
+  Trash2,
+  Download,
+  Eye,
+  EyeOff,
+  LogOut,
+  ChevronRight,
 } from "lucide-react";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("appearance");
   const [showPassword, setShowPassword] = useState(false);
+  const [dark, setDark] = useState(false);
 
   const tabs = [
     { id: "appearance", label: "Appearance & Preferences", icon: Palette },
     { id: "security", label: "Security", icon: Shield },
   ];
+  
+  const theme = [
+    { id: "light", label: "Light", icon: Sun },
+    { id: "dark", label: "Dark", icon: Moon },
+    { id: "system", label: "System", icon: Monitor },
+  ];
+  const handleTabClick = (tabId: string) => {
+    setActiveTab(tabId);
+  };
 
+ 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Settings</h1>
-          <p className="text-gray-600">Manage your account settings and preferences</p>
+          <p className="text-gray-600">
+            Manage your account settings and preferences
+          </p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -57,20 +80,30 @@ const Settings = () => {
           <div className="flex-1">
             <div className="bg-white rounded-xl shadow-sm p-8">
               {/* Appearance & Preferences */}
+              
               {activeTab === "appearance" && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Appearance & Preferences</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                    Appearance & Preferences
+                  </h2>
 
                   <div className="space-y-4">
                     <div className="bg-gray-50 rounded-lg p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Theme</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                        Theme
+                      </h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button className="flex flex-col items-center gap-3 p-4 border-2 border-blue-600 bg-white rounded-lg hover:bg-gray-50 transition">
-                          <Sun size={32} className="text-blue-600" />
+                        
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                      >
+
+                        <button className="flex flex-col items-center gap-3 p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition">
+                          <Sun size={32} className="text-gray-600" />
                           <span className="font-medium">Light</span>
                         </button>
                         <button className="flex flex-col items-center gap-3 p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition">
-                          <Moon size={32} className="text-gray-600" />
+                          <Moon onClick={() => setDark(true)} size={32} className="text-gray-600" />
                           <span className="font-medium">Dark</span>
                         </button>
                         <button className="flex flex-col items-center gap-3 p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition">
@@ -79,8 +112,6 @@ const Settings = () => {
                         </button>
                       </div>
                     </div>
-
-                    
                   </div>
                 </div>
               )}
@@ -88,7 +119,9 @@ const Settings = () => {
               {/* Security */}
               {activeTab === "security" && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Security & Privacy</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                    Security & Privacy
+                  </h2>
 
                   {/* Change Password */}
                   <div className="bg-gray-50 rounded-lg p-6">
@@ -110,7 +143,11 @@ const Settings = () => {
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                           >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            {showPassword ? (
+                              <EyeOff size={20} />
+                            ) : (
+                              <Eye size={20} />
+                            )}
                           </button>
                         </div>
                       </div>
@@ -144,7 +181,9 @@ const Settings = () => {
                       <div className="flex items-start gap-3">
                         <Download className="text-blue-600 mt-1" size={20} />
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-900">Download Your Data</h3>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            Download Your Data
+                          </h3>
                           <p className="text-sm text-gray-600 mt-1">
                             Get a copy of your information
                           </p>
@@ -166,9 +205,12 @@ const Settings = () => {
                       <LogOut className="text-red-600" size={24} />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Logout</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Logout
+                      </h3>
                       <p className="text-sm text-gray-600 mb-4">
-                        Click the button below to log out of your account and end your session.
+                        Click the button below to log out of your account and
+                        end your session.
                       </p>
                       <button
                         onClick={() => {
@@ -191,9 +233,12 @@ const Settings = () => {
                       <Trash2 className="text-red-600" size={24} />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Account</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Delete Account
+                      </h3>
                       <p className="text-sm text-gray-600 mb-4">
-                        Permanently delete your account and all associated data. This action cannot be undone.
+                        Permanently delete your account and all associated data.
+                        This action cannot be undone.
                       </p>
                       <button className="px-6 py-2.5 bg-white border-2 border-red-600 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition font-medium inline-flex items-center gap-2">
                         <Trash2 size={18} />

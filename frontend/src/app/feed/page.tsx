@@ -13,6 +13,7 @@ import {
   Link,
   Trash,
   Pencil,
+  Delete,
 } from "lucide-react";
 
 type Post = {
@@ -66,7 +67,7 @@ const Feed = () => {
       username = parsed.username;
     } catch {}
   }
-
+  const [currentUser, setCurrentUser] = useState(null);
   // Fetch posts
   useEffect(() => {
     const fetchPosts = async () => {
@@ -83,12 +84,43 @@ const Feed = () => {
     fetchPosts();
   }, []);
 
+  // DELETE POST
+  const handleDeletePost = async (postId: number | string) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/post/${postId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setPosts((prev) => prev.filter((post) => post.postId !== postId));
+      }
+    } catch (err) {
+      console.error("Failed to delete post:", err);
+    }
+  };
+  // confimation before deleting a post
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const handleConfirmDelete = (postId: number | string) => {
+    setActivePostId(postId);
+    setShowDeleteModal(true);
+  };
+  // UPDATE POSTS
+  const updatePost = (updatedPost: Post) => {
+    setPosts((prev) =>
+      prev.map((post) =>
+        post.postId === updatedPost.postId ? updatedPost : post,
+      ),
+    );
+  };
+  //Modal for EDiting Post
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+
   // Form state
   const [newPost, setNewPost] = useState({
     content: "",
     imageUrl: "",
   });
-
   // CREATE POST
   const handleSubmitPost = async () => {
     if (!newPost.content.trim()) return;
@@ -186,7 +218,7 @@ const Feed = () => {
     }
   };
 
-  // Get like count for a post (count from array)
+  // Get like count for a post
   const getLikeCount = (postId: number | string) => {
     return likes.filter((like) => like.postId === postId).length;
   };
@@ -251,11 +283,15 @@ const Feed = () => {
   };
 
   //toggle dropdown menue for post actions such as edit, delete, copy link etc
- const [openDropdownPostId, setOpenDropdownPostId] = useState<number | string | null>(null);
+  const [openDropdownPostId, setOpenDropdownPostId] = useState<
+    number | string | null
+  >(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const toggleDropdown = (postId: number | string) => {
     setOpenDropdownPostId(openDropdownPostId === postId ? null : postId);
   };
+
+  //to close dropdown if user clicks outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -318,7 +354,10 @@ const Feed = () => {
                   </div>
                   {/* ACTION */}
                   {openDropdownPostId === post.postId && (
-                    <div className="absolute  mt-30 ml-140 w-48 bg-white rounded-md shadow-lg z-10">
+                    <div
+                      ref={dropdownRef}
+                      className="absolute  mt-30 ml-140 w-48 bg-white rounded-md shadow-lg z-10"
+                    >
                       <div className="py-1">
                         <a
                           href="#"
@@ -327,21 +366,74 @@ const Feed = () => {
                           <Link size={16} className="inline mr-2" />
                           Copy Link
                         </a>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          <Trash size={16} className="inline mr-2" />
-                          Delete Post
-                        </a>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          <Pencil size={16} className="inline mr-2" />
-                          Edit Post
-                        </a>
-                        
+                        {String(post.userId) === String(userId) && (
+                          <div>
+                            <button
+                              onClick={() => handleConfirmDelete(post.postId)}
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 "
+                            >
+                              <Trash size={16} className="inline mr-2" />
+                              Delete Post
+                            </button>
+                            {showDeleteModal &&
+                              activePostId === post.postId && (
+                                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
+                                  <div className="bg-white p-6 rounded-lg shadow-lg">
+                                    <h3 className="text-lg font-semibold mb-4">
+                                      Confirm Delete
+                                    </h3>
+                                    <p className="mb-4">
+                                      Are you sure you want to delete this post?
+                                    </p>
+                                    <div className="flex gap-2">
+                                      <button
+                                        onClick={() =>
+                                          handleDeletePost(post.postId)
+                                        }
+                                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                      >
+                                        Delete
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          setShowDeleteModal(false)
+                                        }
+                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            <button
+                              onClick={() => {
+                                setShowEditModal(true);
+                                setEditingPost(post);
+                              }}
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              <Pencil size={16} className="inline mr-2" />
+                              Edit Post
+                            </button>
+                            {showEditModal &&
+                              editingPost?.postId === post.postId && (
+                                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                                  <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+                                    <h2 className="text-2xl font-bold mb-4">Edit Post</h2>
+                                    <button
+                                        onClick={() =>
+                                          setShowEditModal(false)
+                                        }
+                                        className="px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                                      >
+                                        Cancel
+                                      </button>
+                                  </div>
+                                </div>
+                              )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

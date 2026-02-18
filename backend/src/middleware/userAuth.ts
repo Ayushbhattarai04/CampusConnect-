@@ -6,7 +6,7 @@ interface JwtPayload {
   email: string;
 }
 
-// Extend Express Request type
+// Extend Express Request interface to include user property
 declare global {
   namespace Express {
     interface Request {
@@ -17,7 +17,7 @@ declare global {
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const token = authHeader && authHeader.split(' ')[1]; // Bearers TOKEN
 
   if (!token) {
     return res.status(401).json({ message: 'Access token required' });

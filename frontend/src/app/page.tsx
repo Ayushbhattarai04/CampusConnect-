@@ -7,6 +7,8 @@ import { useState } from "react";
 import Link from "next/link";
 import Setting from "./setting/page";
 import Feed from "./feed/page";
+import Tution from "./tutions/page";
+import Career from "./career/page";
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -32,8 +34,8 @@ export default function Home() {
             )}
             {selectedSection === "Events" && <div>Events content here</div>}
             {selectedSection === "Chat" && <div>Chat content here</div>}
-            {selectedSection === "Tution" && <div>Tution content here</div>}
-            {selectedSection === "Career" && <div>Career content here</div>}
+            {selectedSection === "Tution" && <Tution />}
+            {selectedSection === "Career" && <Career />}
             {selectedSection === "Settings" && <Setting />}
           </main>
         </div>

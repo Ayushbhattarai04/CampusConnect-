@@ -50,7 +50,7 @@ const LoggedOut = () => {
           <div className="relative group">
             <div className="absolute inset-0 bg-linear-to-r from-purple-500 to-pink-500 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
             <img
-              src="./img/campuslogo.png"
+              src="/img/campuslogo.png"
               alt="Campus Connect Logo"
               className="relative w-40 md:w-52 rounded-full shadow-2xl border-4 border-white/20 transform group-hover:scale-105 transition-transform duration-300"
             />

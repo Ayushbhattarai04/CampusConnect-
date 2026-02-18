@@ -9,7 +9,7 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
   // Profile logic removed
 
   return (
-    <nav className="bg-violet-800 p-2 fixed w-full top-0 left-0 z-12 pt-14 shadow-lg border-gray-400">
+    <nav className="bg-violet-800 p-2 fixed w-full top-0 left-0 z-12 pt-14 shadow-lg border-gray-400 ">
       <div className="container flex items-center justify-between">
         {/* Menu Area */}
         <div
@@ -45,8 +45,7 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
         <div className="space-x-4 fixed top-4  right-140 flex items-center">
           <Search className="h-6 w-6 text-white cursor-pointer" />
         </div>
-      
-        {/* Profile button removed */}
+       
       </div>
     </nav>
   );
