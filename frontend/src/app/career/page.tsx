@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Briefcase,
   Building2,
@@ -8,6 +8,7 @@ import {
   Wallet,
   Search,
   Loader2,
+  EllipsisVertical,
 } from "lucide-react";
 
 type Job = {
@@ -25,6 +26,7 @@ type Job = {
 };
 
 type JobForm = {
+  userId?: number | null;
   title: string;
   company: string;
   location: string;
@@ -163,6 +165,34 @@ export default function CareerPage() {
     await fetchJobs();
   };
 
+  const [openDropdownJobId, setOpenDropdownJobId] = useState<
+    number | string | null
+  >(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const toggleDropdown = (jobId: number | string) => {
+    setOpenDropdownJobId(openDropdownJobId === jobId ? null : jobId);
+  };
+
+  //to close dropdown if user clicks outside of it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpenDropdownJobId(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside as EventListener);
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside as EventListener,
+      );
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -199,8 +229,8 @@ export default function CareerPage() {
                 Loading jobs...
               </div>
             ) : error ? (
-              <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-red-700">
-                {error}
+              <div className="bg-white border border-red-200 rounded-2xl p-8 text-center text-red-600">
+                {"An error occurred while loading jobs."}
               </div>
             ) : filteredJobs.length === 0 ? (
               <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-600">
@@ -214,15 +244,35 @@ export default function CareerPage() {
                       onClick={() => handleOpenJobModal(job.jobId)}
                       className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer"
                     >
+                      {String(job.userId) === String(currentUserId) && (
+                      <EllipsisVertical
+                        className="ml-85 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleDropdown(job.jobId);
+                        }}
+                      />
+                       )}
                       <h2 className="text-lg font-semibold text-slate-900">
                         {job.title}
                       </h2>
-
+                       
+                      {openDropdownJobId === job.jobId && (
+                        <div className="absolute ml-70 bg-white border border-slate-200 rounded-lg shadow-lg p-2 z-10">
+                          <button className="block w-full text-left px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 rounded">
+                            Edit
+                          </button>
+                          <button className="block w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded">
+                            Delete
+                          </button>
+                        </div>
+                      )}
                       <div className="mt-3 space-y-1.5 text-sm text-slate-600">
                         <p className="flex items-center gap-2">
                           <Building2 className="w-4 h-4 text-slate-400" />
                           {job.company}
                         </p>
+
                         {job.location && (
                           <p className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-slate-400" />
@@ -280,12 +330,12 @@ export default function CareerPage() {
                             Description: {job.description}
                           </p>
                           <div className="flex-row m-3">
-                            <button className="mt-4 py-1 rounded-xl text-black   transition">
+                            <button className=" py-1 rounded-xl bg-indigo-600 text-white font-10px hover:bg-indigo-700 transition">
                               Apply Now
                             </button>
                             <button
                               onClick={() => setActiveJobId(null)}
-                              className=" py-1 rounded-xl bg-indigo-600 text-white font-small hover:bg-indigo-700 transition"
+                              className=" py-1 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition"
                             >
                               Close
                             </button>
