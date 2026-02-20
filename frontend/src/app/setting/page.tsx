@@ -24,7 +24,7 @@ const Settings = () => {
     { id: "appearance", label: "Appearance & Preferences", icon: Palette },
     { id: "security", label: "Security", icon: Shield },
   ];
-  
+
   const theme = [
     { id: "light", label: "Light", icon: Sun },
     { id: "dark", label: "Dark", icon: Moon },
@@ -34,7 +34,26 @@ const Settings = () => {
     setActiveTab(tabId);
   };
 
- 
+  //Dark mode and light mode logic
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    const shouldUseDark = saved ? saved === "dark" : prefersDark;
+    document.documentElement.classList.toggle("dark", shouldUseDark);
+    setIsDark(shouldUseDark);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+    setIsDark(next);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
       <div className="max-w-6xl mx-auto">
@@ -80,7 +99,7 @@ const Settings = () => {
           <div className="flex-1">
             <div className="bg-white rounded-xl shadow-sm p-8">
               {/* Appearance & Preferences */}
-              
+
               {activeTab === "appearance" && (
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">
@@ -92,18 +111,18 @@ const Settings = () => {
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         Theme
                       </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                      >
-
                         <button className="flex flex-col items-center gap-3 p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition">
                           <Sun size={32} className="text-gray-600" />
                           <span className="font-medium">Light</span>
                         </button>
                         <button className="flex flex-col items-center gap-3 p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition">
-                          <Moon onClick={() => setDark(true)} size={32} className="text-gray-600" />
+                          <Moon
+                            onClick={toggleTheme}
+                            size={32}
+                            className="text-gray-600"
+                          />
                           <span className="font-medium">Dark</span>
                         </button>
                         <button className="flex flex-col items-center gap-3 p-4 border-2 border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition">

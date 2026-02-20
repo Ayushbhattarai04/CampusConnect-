@@ -73,7 +73,7 @@ export default function Sidebar({
               onSelectSection("Tution");
           }}
         >
-          <BookOpen className="h-6 w-6" />
+          <BookOpen className="h-6 w-6 " />
           {open && <span className="ml-3">Tution</span>}
         </li>
         <li
@@ -94,11 +94,8 @@ export default function Sidebar({
               onSelectSection("Settings");
           }}
         >
-          
-            <Settings className="h-6 w-6" />
+          <Settings className="h-6 w-6" />
           {open && <span className="ml-3">Settings</span>}
-          
-          
         </li>
         {open && (
           <li className="mt-30">

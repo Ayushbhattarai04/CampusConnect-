@@ -245,18 +245,18 @@ export default function CareerPage() {
                       className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer"
                     >
                       {String(job.userId) === String(currentUserId) && (
-                      <EllipsisVertical
-                        className="ml-85 cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleDropdown(job.jobId);
-                        }}
-                      />
-                       )}
+                        <EllipsisVertical
+                          className="ml-85 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleDropdown(job.jobId);
+                          }}
+                        />
+                      )}
                       <h2 className="text-lg font-semibold text-slate-900">
                         {job.title}
                       </h2>
-                       
+
                       {openDropdownJobId === job.jobId && (
                         <div className="absolute ml-70 bg-white border border-slate-200 rounded-lg shadow-lg p-2 z-10">
                           <button className="block w-full text-left px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 rounded">
