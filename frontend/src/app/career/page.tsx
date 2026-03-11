@@ -193,6 +193,24 @@ export default function CareerPage() {
     };
   }, []);
 
+  //Delete Functionality
+  const handleDeleteJob = async (jobId: number | string) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/jobs/${jobId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete job");
+      }
+
+      await fetchJobs();
+    } catch (e: any) {
+      setFormError(e?.message || "Failed to delete job");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -244,25 +262,29 @@ export default function CareerPage() {
                       onClick={() => handleOpenJobModal(job.jobId)}
                       className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer"
                     >
-                      {String(job.userId) === String(currentUserId) && (
-                        <EllipsisVertical
-                          className="ml-85 cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleDropdown(job.jobId);
-                          }}
-                        />
-                      )}
-                      <h2 className="text-lg font-semibold text-slate-900">
-                        {job.title}
-                      </h2>
-
+                      <div className="">
+                        {String(job.userId) === String(currentUserId) && (
+                          <EllipsisVertical
+                            className="ml-85 cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleDropdown(job.jobId);
+                            }}
+                          />
+                        )}
+                        <h2 className="text-lg font-semibold text-slate-900">
+                          {job.title}
+                        </h2>
+                      </div>
                       {openDropdownJobId === job.jobId && (
                         <div className="absolute ml-70 bg-white border border-slate-200 rounded-lg shadow-lg p-2 z-10">
                           <button className="block w-full text-left px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 rounded">
                             Edit
                           </button>
-                          <button className="block w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded">
+                          <button
+                            onClick={() => handleDeleteJob(job.jobId)}
+                            className="block w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded"
+                          >
                             Delete
                           </button>
                         </div>

@@ -3,6 +3,9 @@ import "./models/Posts";
 import "./models/Likes";
 import "./models/Jobs";
 import "./models/Tution";
+import "./models/Events";
+import "./models/Comments";
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -13,7 +16,7 @@ import commentsRoutes from "./routes/comments";
 import likesRoutes from "./routes/likes";
 import jobsRoutes from "./routes/jobs";
 import tutionRoutes from "./routes/tution";
-import "./models/Comments";
+import eventsRoutes from "./routes/events";
 
 dotenv.config();
 
@@ -36,6 +39,7 @@ app.use("/api/comments", commentsRoutes);
 app.use("/api/likes", likesRoutes);
 app.use("/api/jobs", jobsRoutes);
 app.use("/api/tution", tutionRoutes);
+app.use("/api/events", eventsRoutes);
 
 // Test route
 app.get("/", (req, res) => {

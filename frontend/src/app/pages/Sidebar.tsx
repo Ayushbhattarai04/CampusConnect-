@@ -38,7 +38,7 @@ export default function Sidebar({
           {open && <span className="ml-3">Feed</span>}
         </li>
         <li
-          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2"
+          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2 "
           onClick={() => {
             if (typeof onSelectSection === "function")
               onSelectSection("Communities");

@@ -8,6 +8,7 @@ import {
   Search,
   UserRound,
   Wallet,
+  Delete,
 } from "lucide-react";
 
 type Tuition = {
@@ -83,7 +84,7 @@ export default function TutionPage() {
       console.error("Fetch error:", e);
       setError(
         e?.message ||
-          "Could not load tuitions. Make sure backend is running on port 5000.",
+          "Could not load tuitions try again ",
       );
       setTuitions([]);
     } finally {
@@ -188,6 +189,28 @@ export default function TutionPage() {
 
   const [selectedDate, setSelectedDate] = useState("");
 
+  //Delete tution function
+  const handleDeleteTution = async (tutionId: number) => {
+    if (!currentUserId) {
+      setFormError("Please login first to delete a tution.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/tution/${tutionId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete tution");
+      }
+
+      await fetchTutions();
+    } catch (e: any) {
+      setFormError(e?.message || "Failed to delete tution");
+    }
+  };
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -217,12 +240,6 @@ export default function TutionPage() {
                     className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-800"
                   />
                 </div>
-
-                <select
-                  value={subjectFilter}
-                  onChange={(e) => setSubjectFilter(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-800"
-                ></select>
               </div>
             </div>
 
@@ -237,9 +254,13 @@ export default function TutionPage() {
                   Loading tuitions...
                 </div>
               ) : filteredTutions.length > 0 ? (
-                filteredTutions.map((item) => (
+                filteredTutions.map((item, index) => (
                   <article
-                    key={item.id}
+                    key={
+                      item.tutionId ??
+                      item.id ??
+                      `${item.userId}-${item.subject}-${item.schedules ?? "no-schedule"}-${index}`
+                    }
                     className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
                   >
                     <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -292,8 +313,18 @@ export default function TutionPage() {
                     <p className="mt-4 text-slate-600 text-sm leading-relaxed">
                       {item.description}
                     </p>
-
-                    <button className="mt-4 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors">
+                    {String(item.userId) === String(currentUserId) && (
+                      <button
+                        onClick={() => {
+                          const id = item.tutionId ?? item.id;
+                          if (id) handleDeleteTution(id);
+                        }}
+                        className="mt-2 px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-medium hover:bg-red-600 transition-colors"
+                      >
+                        <Delete className="w-3.5 h-3.5 inline" /> Delete
+                      </button>
+                    )}
+                    <button className="mt-4 ml-10 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors">
                       Contact Tutor
                     </button>
                   </article>

@@ -54,7 +54,6 @@ export const register = async (req: Request, res: Response) => {
       { expiresIn: "1d" },
     );
 
-    // Setup transporter
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
@@ -143,5 +142,18 @@ export const login = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Server error during login" });
+  }
+};
+
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.findAll({
+      attributes: ["id", "username", "email"],
+      order: [["createdAt", "DESC"]],
+    });
+    res.json(users);
+  } catch (error) {
+    console.error("Get users error:", error);
+    res.status(500).json({ message: "Failed to load users" });
   }
 };

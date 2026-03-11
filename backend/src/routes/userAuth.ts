@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login } from "../controllers/userAuth";
+import { register, login, getUsers } from "../controllers/userAuth";
 import { authenticateToken } from "../middleware/userAuth";
 import User from "../models/User";
 import jwt from "jsonwebtoken";
@@ -8,6 +8,7 @@ const router = express.Router();
 // Public routes
 router.post("/register", register);
 router.post("/login", login);
+router.get("/users", getUsers);
 
 // Profile route removed
 

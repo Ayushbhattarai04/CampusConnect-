@@ -420,15 +420,15 @@ const Feed = () => {
                               editingPost?.postId === post.postId && (
                                 <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                                   <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
-                                    <h2 className="text-2xl font-bold mb-4">Edit Post</h2>
+                                    <h2 className="text-2xl font-bold mb-4">
+                                      Edit Post
+                                    </h2>
                                     <button
-                                        onClick={() =>
-                                          setShowEditModal(false)
-                                        }
-                                        className="px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                                      >
-                                        Cancel
-                                      </button>
+                                      onClick={() => setShowEditModal(false)}
+                                      className="px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                                    >
+                                      Cancel
+                                    </button>
                                   </div>
                                 </div>
                               )}
@@ -489,7 +489,7 @@ const Feed = () => {
           </div>
 
           {/* RIGHT COLUMN - SIDEBAR */}
-          <div className="lg:col-span-1 space-y-4 max-h-[calc(100vh-120px)] sticky overflow-y-auto custom-scrollbar">
+          <div className="lg:col-span-1 space-y-4 sticky top-20 self-start max-h-[calc(100vh-3rem)] overflow-y-auto">
             {/* COMMUNITIES CARD */}
             <div className="bg-white rounded-xl shadow-sm p-6  top-0">
               <div className="flex items-center gap-2 mb-4">

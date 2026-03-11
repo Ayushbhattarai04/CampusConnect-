@@ -9,7 +9,7 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
   // Profile logic removed for now
 
   return (
-    <nav className="bg-violet-800 p-2 fixed w-full top-0 left-0 z-12 pt-14 shadow-lg border-gray-400 ">
+    <nav className="bg-violet-800 p-2 fixed w-full top-0  z-12 pt-14 shadow-lg border-gray-400 ">
       <div className="container flex items-center justify-between">
         {/* Menu Area */}
         <div
