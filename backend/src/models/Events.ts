@@ -11,6 +11,7 @@ interface EventAttributes {
   date: Date;
   location?: string;
   schedules?: Date;
+  fee?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -68,6 +69,10 @@ Event.init(
       allowNull: false,
     },
     location: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    fee: {
       type: DataTypes.STRING,
       allowNull: true,
     },

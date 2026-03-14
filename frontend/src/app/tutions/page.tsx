@@ -82,10 +82,7 @@ export default function TutionPage() {
       setTuitions(tutionsData);
     } catch (e: any) {
       console.error("Fetch error:", e);
-      setError(
-        e?.message ||
-          "Could not load tuitions try again ",
-      );
+      setError(e?.message || "Could not load tuitions try again ");
       setTuitions([]);
     } finally {
       setLoading(false);

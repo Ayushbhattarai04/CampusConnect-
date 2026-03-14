@@ -16,7 +16,7 @@ type Event = {
   updatedAt?: Date;
   User?: {
     id: number;
-    name: string;
+    username: string;
     email: string;
   };
 };
@@ -40,6 +40,7 @@ export default function Events() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [formError, setFormError] = useState("");
+
   const [form, setForm] = useState<EventsForm>({
     title: "",
     description: "",
@@ -86,6 +87,87 @@ export default function Events() {
     fetchEvents();
   }, []);
 
+  const handleInput = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreateEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError("");
+    if (!currentUserId) {
+      setFormError("You must be logged in to create an event.");
+      return;
+    }
+    const { title, description, organizer, date, location, fee, schedules } =
+      form;
+    if (!title || !date) {
+      setFormError("Title and date are required.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: currentUserId,
+          title,
+          description,
+          organizer,
+          date,
+          location,
+          fee,
+          schedules,
+        }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData?.message || "Failed to create event.");
+      }
+      await fetchEvents();
+      setForm({
+        title: "",
+        description: "",
+        organizer: "",
+        date: new Date(),
+        location: "",
+        fee: "",
+        schedules: new Date(),
+      });
+    } catch (e: any) {
+      console.error("Create event error:", e);
+      setFormError(e?.message || "Could not create event try again ");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const filteredEvents = useMemo(() => {
+    const text = query.trim().toLowerCase();
+    if (!text) return events;
+    return events.filter((event) =>
+      [
+        event.title,
+        event.description,
+        event.organizer,
+        event.location,
+        event.fee,
+        event.User?.username,
+        event.date ? new Date(event.date).toLocaleDateString() : "",
+        event.schedules ? new Date(event.schedules).toLocaleTimeString() : "",
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(text),
+    );
+  }, [events, query]);
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -101,10 +183,12 @@ export default function Events() {
                   <div />
                   <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="md:col-span-2 relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4  text-slate-400" />
                       <input
-                        placeholder="Search Events, subject, location..."
-                        className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-800"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Search Events, Event details, location..."
+                        className="w-150 pl-10 pr-10  py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-800"
                       />
                     </div>
                   </div>
@@ -122,9 +206,9 @@ export default function Events() {
                 <div className="text-center py-10 text-slate-500">
                   Loading events...
                 </div>
-              ) : (
+              ) : filteredEvents.length > 0 ? (
                 <div className="space-y-4">
-                  {events.map((event) => (
+                  {filteredEvents.map((event) => (
                     <div
                       key={event.eventId}
                       className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
@@ -133,8 +217,25 @@ export default function Events() {
                         {event.title}
                       </h2>
                       <p className="text-slate-600">{event.description}</p>
+                      <div className="mt-3 flex items-center gap-4 text-sm text-slate-500">
+                        <div className="flex items-center gap-1">
+                          <User className="w-4 h-4" />
+                          {event.User?.username || "Unknown Organizer"}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <p>{new Date(event.date).toLocaleDateString()}</p>
+                          <p>{event.schedules && `  ${event.schedules}`}</p>
+                          <p>{event.location && ` at ${event.location}`}</p>
+                          <p>{event.fee}</p>
+                        </div>
+                      </div>
                     </div>
                   ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 text-slate-500">
+                  No events found.
                 </div>
               )}
             </div>
