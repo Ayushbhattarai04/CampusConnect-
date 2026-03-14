@@ -1,5 +1,6 @@
 "use client";
 import React, { useMemo, useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { Calendar, Search, User, EllipsisVertical } from "lucide-react";
 
 type Event = {
@@ -253,7 +254,6 @@ export default function Events() {
                 <div />
               </div>
             </div>
-
             {/* EVENTS CARD  */}
             <div className="space-y-4">
               {error && (
@@ -279,76 +279,82 @@ export default function Events() {
                       `${event.userId}-${event.title}-${event.createdAt ?? index}`;
 
                     return (
-                      <div
+                      <Link
                         key={eventKey}
-                        className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                        href={`/events/${event.eventId ?? ""}`}
                       >
-                        <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-                          {event.title}
-                        </h2>
-                        <div className="ml-auto">
-                          <button
-                            onClick={() => toggleDropdown(eventKey)}
-                            className="text-gray-500 ml-180 hover:text-gray-700 hover:transition-colors"
-                          >
-                            <EllipsisVertical size={24} />
-                          </button>
-                          {openDropdownEvents === eventKey && (
-                            <div
-                              ref={dropdownRef}
-                              className="absolute ml-150 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg z-10"
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm transition-shadow duration-200 hover:shadow-md">
+                          <h2 className="text-xl font-semibold tracking-tight text-slate-900">
+                            {event.title}
+                          </h2>
+                          <div className="ml-auto">
+                            <button
+                              onClick={() => toggleDropdown(eventKey)}
+                              className="text-gray-500 ml-180 hover:text-gray-700 hover:transition-colors"
                             >
-                              <button className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Edit</button>
-                              <button className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Delete</button>
-                            </div>
-                          )}
-                        </div>
-                        <p className="">
-                          {event.User?.username || "Publisher not found"}
-                        </p>
-                        <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                          {event.description || "No description provided."}
-                        </p>
-                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-600">
-                          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                            <User className="w-4 h-4 text-indigo-600" />
-                            <span className="font-medium text-slate-700">
-                              {event.organizer || event.User?.username}
-                            </span>
+                              <EllipsisVertical size={24} />
+                            </button>
+                            {openDropdownEvents === eventKey && (
+                              <div
+                                ref={dropdownRef}
+                                className="absolute ml-150 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg z-10"
+                              >
+                                <button className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                                  Edit
+                                </button>
+                                <button className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                                  Delete
+                                </button>
+                              </div>
+                            )}
                           </div>
-                          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                            <Calendar className="w-4 h-4 text-indigo-600" />
-                            <span className="font-medium text-slate-700">
-                              Event on:{" "}
-                              {event.schedules
-                                ? new Date(event.schedules).toLocaleString()
-                                : "No schedule set"}
-                            </span>
-                          </div>
-                          {(event.location || event.fee) && (
-                            <div className="sm:col-span-2 flex flex-wrap items-center gap-2 text-xs">
-                              {event.location && (
-                                <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-slate-700">
-                                  Location: {event.location}
-                                </span>
-                              )}
-                              {event.fee && (
-                                <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-indigo-700">
-                                  Fee: {event.fee}
-                                </span>
-                              )}
+                          <p className="">
+                            {event.User?.username || "Publisher not found"}
+                          </p>
+                          <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                            {event.description || "No description provided."}
+                          </p>
+                          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-600">
+                            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                              <User className="w-4 h-4 text-indigo-600" />
+                              <span className="font-medium text-slate-700">
+                                {event.organizer || event.User?.username}
+                              </span>
                             </div>
-                          )}
-                          {event.schedules && (
-                            <p className="sm:col-span-2 text-xs text-slate-500">
-                              Published on:{" "}
-                              {event.createdAt
-                                ? new Date(event.createdAt).toLocaleString()
-                                : ""}
-                            </p>
-                          )}
+                            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                              <Calendar className="w-4 h-4 text-indigo-600" />
+                              <span className="font-medium text-slate-700">
+                                Event on:{" "}
+                                {event.schedules
+                                  ? new Date(event.schedules).toLocaleString()
+                                  : "No schedule set"}
+                              </span>
+                            </div>
+                            {(event.location || event.fee) && (
+                              <div className="sm:col-span-2 flex flex-wrap items-center gap-2 text-xs">
+                                {event.location && (
+                                  <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-slate-700">
+                                    Location: {event.location}
+                                  </span>
+                                )}
+                                {event.fee && (
+                                  <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-indigo-700">
+                                    Fee: {event.fee}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {event.schedules && (
+                              <p className="sm:col-span-2 text-xs text-slate-500">
+                                Published on:{" "}
+                                {event.createdAt
+                                  ? new Date(event.createdAt).toLocaleString()
+                                  : ""}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>
