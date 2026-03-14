@@ -8,7 +8,6 @@ type Event = {
   organizer?: string;
   title: string;
   description?: string;
-  date: Date;
   location?: string;
   fee?: string;
   schedules?: Date;
@@ -25,7 +24,7 @@ type EventsForm = {
   title: string;
   description?: string;
   organizer?: string;
-  date: Date;
+  createdAt: Date;
   location?: string;
   fee?: string;
   schedules?: Date;
@@ -45,7 +44,7 @@ export default function Events() {
     title: "",
     description: "",
     organizer: "",
-    date: new Date(),
+    createdAt: new Date(),
     location: "",
     fee: "",
     schedules: new Date(),
@@ -101,12 +100,12 @@ export default function Events() {
       setFormError("You must be logged in to create an event.");
       return;
     }
-    const { title, description, organizer, date, location, fee, schedules } =
-      form;
-    if (!title || !date) {
-      setFormError("Title and date are required.");
+    const { title, description, organizer, location, fee, schedules } = form;
+    if (!title || !schedules) {
+      setFormError("Title and event schedule are required.");
       return;
     }
+    const publishedDate = new Date();
     setSubmitting(true);
     try {
       const response = await fetch(`${API_BASE}/api/events`, {
@@ -119,7 +118,7 @@ export default function Events() {
           title,
           description,
           organizer,
-          date,
+          createdAt: publishedDate,
           location,
           fee,
           schedules,
@@ -134,7 +133,7 @@ export default function Events() {
         title: "",
         description: "",
         organizer: "",
-        date: new Date(),
+        createdAt: new Date(),
         location: "",
         fee: "",
         schedules: new Date(),
@@ -158,7 +157,7 @@ export default function Events() {
         event.location,
         event.fee,
         event.User?.username,
-        event.date ? new Date(event.date).toLocaleDateString() : "",
+        event.createdAt ? new Date(event.createdAt).toLocaleDateString() : "",
         event.schedules ? new Date(event.schedules).toLocaleTimeString() : "",
       ]
         .filter(Boolean)
@@ -167,6 +166,15 @@ export default function Events() {
         .includes(text),
     );
   }, [events, query]);
+
+  const toDateTimeLocalValue = (value?: Date) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().slice(0, 16);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -196,6 +204,8 @@ export default function Events() {
                 <div />
               </div>
             </div>
+
+            {/* EVENTS CARD  */}
             <div className="space-y-4">
               {error && (
                 <div className="bg-red-100 text-red-700 p-3 rounded">
@@ -211,24 +221,51 @@ export default function Events() {
                   {filteredEvents.map((event) => (
                     <div
                       key={event.eventId}
-                      className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
+                      className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
                     >
-                      <h2 className="text-xl font-bold text-slate-900">
+                      <h2 className="text-xl font-semibold tracking-tight text-slate-900">
                         {event.title}
                       </h2>
-                      <p className="text-slate-600">{event.description}</p>
-                      <div className="mt-3 flex items-center gap-4 text-sm text-slate-500">
-                        <div className="flex items-center gap-1">
-                          <User className="w-4 h-4" />
-                          {event.User?.username || "Unknown Organizer"}
+                      <p className="">
+                        {event.User?.username || "Publisher not found"}
+                      </p>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                        {event.description || "No description provided."}
+                      </p>
+                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-600">
+                        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                          <User className="w-4 h-4 text-indigo-600" />
+                          <span className="font-medium text-slate-700">
+                            {event.organizer || event.User?.username}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <p>{new Date(event.date).toLocaleDateString()}</p>
-                          <p>{event.schedules && `  ${event.schedules}`}</p>
-                          <p>{event.location && ` at ${event.location}`}</p>
-                          <p>{event.fee}</p>
+                        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                          <Calendar className="w-4 h-4 text-indigo-600" />
+                          <span className="font-medium text-slate-700">
+                            Event on  : {" "}
+                            {new Date(event.schedules).toLocaleString()}
+                          </span>
                         </div>
+                        {(event.location || event.fee) && (
+                          <div className="sm:col-span-2 flex flex-wrap items-center gap-2 text-xs">
+                            {event.location && (
+                              <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-slate-700">
+                                Location: {event.location}
+                              </span>
+                            )}
+                            {event.fee && (
+                              <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-indigo-700">
+                                Fee: {event.fee}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        {event.schedules && (
+                          <p className="sm:col-span-2 text-xs text-slate-500">
+                            Published on: {" "}
+                            {new Date(event.createdAt).toLocaleString()}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -240,10 +277,97 @@ export default function Events() {
               )}
             </div>
           </section>
-          {/* Right sidebar for creating an event */}
-          <aside>
+          {/* Right side for creating an event */}
+          <aside className="space-y-5">
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-              <h1>Create an event</h1>
+              <h3 className="text-lg font-semibold text-slate-900">
+                Create an event
+              </h3>
+              <p className="text-sm text-slate-600 mt-1">
+                Publish date is set automatically when you post.
+              </p>
+
+              <form onSubmit={handleCreateEvent} className="mt-4 space-y-3">
+                {formError && (
+                  <div className="bg-red-50 text-red-700 border border-red-200 px-3 py-2 rounded-lg text-sm">
+                    {formError}
+                  </div>
+                )}
+
+                <input
+                  name="title"
+                  value={form.title}
+                  onChange={handleInput}
+                  placeholder="Event title"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+
+                <input
+                  name="organizer"
+                  value={form.organizer}
+                  onChange={handleInput}
+                  placeholder="Organizer name"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleInput}
+                  placeholder="Event description"
+                  rows={3}
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                />
+
+                <input
+                  name="location"
+                  value={form.location}
+                  onChange={handleInput}
+                  placeholder="Location"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+
+                <input
+                  name="fee"
+                  value={form.fee}
+                  onChange={handleInput}
+                  placeholder="Fee (optional)"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+
+                <div className="space-y-1">
+                  <label
+                    htmlFor="event-schedule"
+                    className="text-sm font-medium text-slate-700"
+                  >
+                    Event held on
+                  </label>
+                  <input
+                    id="event-schedule"
+                    type="datetime-local"
+                    value={toDateTimeLocalValue(form.schedules)}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        schedules: e.target.value
+                          ? new Date(e.target.value)
+                          : undefined,
+                      }))
+                    }
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 disabled:bg-slate-400 transition-colors"
+                >
+                  {submitting ? "Creating..." : "Create Event"}
+                </button>
+              </form>
             </div>
           </aside>
         </div>

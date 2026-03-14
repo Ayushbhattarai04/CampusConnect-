@@ -8,7 +8,6 @@ interface EventAttributes {
   organizer?: string;
   title: string;
   description?: string;
-  date: Date;
   location?: string;
   schedules?: Date;
   fee?: string;
@@ -27,7 +26,6 @@ class Event
   organizer?: string;
   title!: string;
   description?: string;
-  date!: Date;
   location?: string;
   fee?: string;
   schedules?: Date;
@@ -64,10 +62,6 @@ Event.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
     location: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -77,7 +71,7 @@ Event.init(
       allowNull: true,
     },
     schedules: {
-      type: DataTypes.TIME,
+      type: DataTypes.DATE,
       allowNull: true,
     },
     createdAt: {

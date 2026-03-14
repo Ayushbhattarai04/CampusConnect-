@@ -8,16 +8,24 @@ export const createEvent = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const { userId, title, description, date, fee, schedules, location } =
+    const { userId, organizer, title, description, fee, schedules, location } =
       req.body;
 
     // Validate required fields
-    if (!userId || !title || !date) {
+    if (!userId || !title || !schedules) {
       res
         .status(400)
-        .json({ message: "userId, title, and date are required." });
+        .json({ message: "userId, title, and schedules are required." });
       return;
     }
+
+    const scheduleDate = new Date(schedules);
+    if (Number.isNaN(scheduleDate.getTime())) {
+      res.status(400).json({ message: "Invalid schedules datetime." });
+      return;
+    }
+
+    const publishedDate = new Date();
 
     // Check if user exists
     const userExists = await User.findByPk(userId);
@@ -29,12 +37,13 @@ export const createEvent = async (
     //create event
     const event = await Tution.create({
       userId,
+      organizer: organizer || null,
       title,
       description: description || null,
-      date,
-      schedules: schedules || new Date(),
+      schedules: scheduleDate,
       location: location || null,
       fee: fee || null,
+      createdAt: publishedDate,
     });
 
     res
