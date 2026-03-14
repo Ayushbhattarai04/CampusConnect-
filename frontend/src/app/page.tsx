@@ -5,6 +5,7 @@ import Sidebar from "./pages/Sidebar";
 import { useState } from "react";
 import Setting from "./setting/page";
 import Feed from "./feed/page";
+import PostDetailPage from "./feed/[id]/page";
 import Tution from "./tutions/page";
 import Career from "./career/page";
 import Events from "./events/page";

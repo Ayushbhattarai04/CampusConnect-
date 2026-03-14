@@ -10,11 +10,12 @@ import {
   Heart,
   Calendar,
   EllipsisVertical,
-  Link,
   Trash,
   Pencil,
   Delete,
 } from "lucide-react";
+
+import Link from "next/link";
 
 type Post = {
   postId: number | string;
@@ -317,6 +318,7 @@ const Feed = () => {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* LEFT COLUMN - POSTS */}
+
           <div className="lg:col-span-2 space-y-4  overflow-y-auto">
             {posts.map((post: any) => (
               <div
@@ -363,7 +365,6 @@ const Feed = () => {
                           href="#"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
-                          <Link size={16} className="inline mr-2" />
                           Copy Link
                         </a>
                         {String(post.userId) === String(userId) && (
@@ -438,16 +439,18 @@ const Feed = () => {
                     </div>
                   )}
                 </div>
-                {/* CONTENT */}
-                <p className="text-gray-700 mb-4">{post.content}</p>
-                {/* IMAGE */}
-                {post.imageUrl && (
-                  <img
-                    src={post.imageUrl}
-                    alt="Post"
-                    className="max-w-full rounded-lg mb-4"
-                  />
-                )}
+                <Link key={post.postId} href={`/feed/${post.postId}`}>
+                  {/* CONTENT */}
+                  <p className="text-gray-700 mb-4">{post.content}</p>
+                  {/* IMAGE */}
+                  {post.imageUrl && (
+                    <img
+                      src={post.imageUrl}
+                      alt="Post"
+                      className="max-w-full rounded-lg mb-4"
+                    />
+                  )}
+                </Link>
                 {/* ACTIONS */}
                 <div className="flex items-center gap-4 pt-4 border-t mt-4">
                   <button

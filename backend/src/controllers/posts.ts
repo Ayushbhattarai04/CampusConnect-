@@ -60,3 +60,21 @@ export const getAllPosts = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch posts" });
   }
 };
+// Get a single post by ID with username
+export const getPostById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const post = await Post.findOne({
+      where: { postId: id },
+      include: [{ model: User, attributes: ["id", "username", "email"] }],
+    });
+    if (!post) {
+      res.status(404).json({ message: "Post not found" });
+      return;
+    }
+    res.json(post);
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
