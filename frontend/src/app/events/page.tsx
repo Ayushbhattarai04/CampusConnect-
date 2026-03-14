@@ -1,6 +1,6 @@
 "use client";
-import React, { useMemo, useState, useEffect } from "react";
-import { Calendar, Search, User } from "lucide-react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
+import { Calendar, Search, User, EllipsisVertical } from "lucide-react";
 
 type Event = {
   eventId?: number;
@@ -39,6 +39,7 @@ export default function Events() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [formError, setFormError] = useState("");
+  const [showMyEventsOnly, setShowMyEventsOnly] = useState(false);
 
   const [form, setForm] = useState<EventsForm>({
     title: "",
@@ -167,6 +168,11 @@ export default function Events() {
     );
   }, [events, query]);
 
+  const filtereventsByCurrentUser = useMemo(() => {
+    if (!currentUserId) return [];
+    return events.filter((event) => event.userId === currentUserId);
+  }, [events, currentUserId]);
+
   const toDateTimeLocalValue = (value?: Date) => {
     if (!value) return "";
     const date = new Date(value);
@@ -175,6 +181,35 @@ export default function Events() {
     const localDate = new Date(date.getTime() - offset * 60 * 1000);
     return localDate.toISOString().slice(0, 16);
   };
+
+  //dropdown menu
+  const [openDropdownEvents, setOpenDropdownEvents] = useState<
+    number | string | null
+  >(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const toggleDropdown = (eventId: number | string) => {
+    setOpenDropdownEvents(openDropdownEvents === eventId ? null : eventId);
+  };
+
+  // close dorp down menu when click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpenDropdownEvents(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside as EventListener);
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside as EventListener,
+      );
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -188,6 +223,20 @@ export default function Events() {
                     <Calendar className="w-7 h-7 text-indigo-600" />
                     Events
                   </h1>
+                  <p>
+                    <button
+                      onClick={() => setShowMyEventsOnly((prev) => !prev)}
+                      className={`px-3 py-1 ml-153  rounded-lg text-sm font-medium transition-colors ${
+                        showMyEventsOnly
+                          ? "bg-indigo-500 text-white "
+                          : "bg-indigo-800 text-white "
+                      }`}
+                    >
+                      {showMyEventsOnly
+                        ? "Show all events"
+                        : "Show my events only"}
+                    </button>
+                  </p>
                   <div />
                   <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="md:col-span-2 relative">
@@ -216,59 +265,92 @@ export default function Events() {
                 <div className="text-center py-10 text-slate-500">
                   Loading events...
                 </div>
-              ) : filteredEvents.length > 0 ? (
+              ) : (showMyEventsOnly
+                  ? filtereventsByCurrentUser
+                  : filteredEvents
+                ).length > 0 ? (
                 <div className="space-y-4">
-                  {filteredEvents.map((event) => (
-                    <div
-                      key={event.eventId}
-                      className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
-                    >
-                      <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-                        {event.title}
-                      </h2>
-                      <p className="">
-                        {event.User?.username || "Publisher not found"}
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                        {event.description || "No description provided."}
-                      </p>
-                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-600">
-                        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                          <User className="w-4 h-4 text-indigo-600" />
-                          <span className="font-medium text-slate-700">
-                            {event.organizer || event.User?.username}
-                          </span>
+                  {(showMyEventsOnly
+                    ? filtereventsByCurrentUser
+                    : filteredEvents
+                  ).map((event, index) => {
+                    const eventKey =
+                      event.eventId ??
+                      `${event.userId}-${event.title}-${event.createdAt ?? index}`;
+
+                    return (
+                      <div
+                        key={eventKey}
+                        className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                      >
+                        <h2 className="text-xl font-semibold tracking-tight text-slate-900">
+                          {event.title}
+                        </h2>
+                        <div className="ml-auto">
+                          <button
+                            onClick={() => toggleDropdown(eventKey)}
+                            className="text-gray-500 ml-180 hover:text-gray-700 hover:transition-colors"
+                          >
+                            <EllipsisVertical size={24} />
+                          </button>
+                          {openDropdownEvents === eventKey && (
+                            <div
+                              ref={dropdownRef}
+                              className="absolute ml-150 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg z-10"
+                            >
+                              <button className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Edit</button>
+                              <button className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Delete</button>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                          <Calendar className="w-4 h-4 text-indigo-600" />
-                          <span className="font-medium text-slate-700">
-                            Event on  : {" "}
-                            {new Date(event.schedules).toLocaleString()}
-                          </span>
-                        </div>
-                        {(event.location || event.fee) && (
-                          <div className="sm:col-span-2 flex flex-wrap items-center gap-2 text-xs">
-                            {event.location && (
-                              <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-slate-700">
-                                Location: {event.location}
-                              </span>
-                            )}
-                            {event.fee && (
-                              <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-indigo-700">
-                                Fee: {event.fee}
-                              </span>
-                            )}
+                        <p className="">
+                          {event.User?.username || "Publisher not found"}
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                          {event.description || "No description provided."}
+                        </p>
+                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-600">
+                          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                            <User className="w-4 h-4 text-indigo-600" />
+                            <span className="font-medium text-slate-700">
+                              {event.organizer || event.User?.username}
+                            </span>
                           </div>
-                        )}
-                        {event.schedules && (
-                          <p className="sm:col-span-2 text-xs text-slate-500">
-                            Published on: {" "}
-                            {new Date(event.createdAt).toLocaleString()}
-                          </p>
-                        )}
+                          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                            <Calendar className="w-4 h-4 text-indigo-600" />
+                            <span className="font-medium text-slate-700">
+                              Event on:{" "}
+                              {event.schedules
+                                ? new Date(event.schedules).toLocaleString()
+                                : "No schedule set"}
+                            </span>
+                          </div>
+                          {(event.location || event.fee) && (
+                            <div className="sm:col-span-2 flex flex-wrap items-center gap-2 text-xs">
+                              {event.location && (
+                                <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-slate-700">
+                                  Location: {event.location}
+                                </span>
+                              )}
+                              {event.fee && (
+                                <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-indigo-700">
+                                  Fee: {event.fee}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {event.schedules && (
+                            <p className="sm:col-span-2 text-xs text-slate-500">
+                              Published on:{" "}
+                              {event.createdAt
+                                ? new Date(event.createdAt).toLocaleString()
+                                : ""}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-10 text-slate-500">

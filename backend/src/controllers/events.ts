@@ -104,3 +104,26 @@ export const getEventById = async (
     });
   }
 };
+
+//Delete events by id
+export const deleteEventById = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const event = await Tution.findByPk(id);
+    if (!event) {
+      res.status(404).json({ message: "Event not found." });
+      return;
+    }
+    await event.destroy();
+    res.status(200).json({ message: "Event deleted successfully." });
+  } catch (error: any) {
+    console.error("Delete event by id error:", error);
+    res.status(500).json({
+      message: "Internal server error.",
+      error: error?.message || error,
+    });
+  }
+};
