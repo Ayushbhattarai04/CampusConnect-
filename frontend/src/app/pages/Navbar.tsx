@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { Menu, Plus, Search } from "lucide-react";
 import Sidebar from "./Sidebar";
-import createPost from "../posts/page";
 import Link from "next/link";
 
 export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
   // Profile logic removed for now
+ 
+
 
   return (
     <nav className="bg-violet-800 p-2 fixed w-full top-0  z-12 pt-14 shadow-lg border-gray-400 ">
@@ -45,7 +46,16 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
         <div className="space-x-4 fixed top-4  right-140 flex items-center">
           <Search className="h-6 w-6 text-white cursor-pointer" />
         </div>
-       
+
+        {/* Profile Area */}
+       <div>
+        <img alt="Profile" className="h-10 w-10 rounded-full cursor-pointer fixed top-4 right-4 hover:ring-2 hover:ring-gray-300 transition duration-300" />
+       <div>
+        <h6></h6>
+       </div>
+       </div>
+       <div>
+       </div>
       </div>
     </nav>
   );

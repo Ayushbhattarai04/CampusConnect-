@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import Profile from "../models/Profile";
 import nodemailer from "nodemailer";
 import sequelize from "../config/database";
 
@@ -44,6 +45,15 @@ export const register = async (req: Request, res: Response) => {
         password,
         institution: institution || null,
         studId: studId || null,
+      },
+      { transaction: t },
+    );
+
+    await Profile.create(
+      {
+        userId: user.id,
+        bio: "",
+        profilePic: "",
       },
       { transaction: t },
     );
