@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Tution from "../models/Events";
+import Events from "../models/Events";
 import User from "../models/User";
 
 //Create a new event
@@ -35,7 +35,7 @@ export const createEvent = async (
     }
 
     //create event
-    const event = await Tution.create({
+    const event = await Events.create({
       userId,
       organizer: organizer || null,
       title,
@@ -64,7 +64,7 @@ export const getAllEvents = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const events = await Tution.findAll({
+    const events = await Events.findAll({
       include: [{ model: User, attributes: ["id", "username"] }],
     });
     res
@@ -86,7 +86,7 @@ export const getEventById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const event = await Tution.findByPk(id, {
+    const event = await Events.findByPk(id, {
       include: [{ model: User, attributes: ["id", "username"] }],
     });
     if (!event) {
@@ -112,7 +112,7 @@ export const deleteEventById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const event = await Tution.findByPk(id);
+    const event = await Events.findByPk(id);
     if (!event) {
       res.status(404).json({ message: "Event not found." });
       return;
@@ -121,6 +121,47 @@ export const deleteEventById = async (
     res.status(200).json({ message: "Event deleted successfully." });
   } catch (error: any) {
     console.error("Delete event by id error:", error);
+    res.status(500).json({
+      message: "Internal server error.",
+      error: error?.message || error,
+    });
+  }
+};
+
+//Update event by id
+export const updateEventById = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { organizer, title, description, fee, schedules, location } =
+      req.body;
+    const event = await Events.findByPk(id);
+    if (!event) {
+      res.status(404).json({ message: "Event not found." });
+      return;
+    }
+    if (schedules) {
+      const scheduleDate = new Date(schedules);
+      if (Number.isNaN(scheduleDate.getTime())) {
+        res.status(400).json({ message: "Invalid schedules datetime." });
+        return;
+      }
+      event.schedules = scheduleDate;
+    }
+    if (organizer !== undefined) event.organizer = organizer;
+    if (title !== undefined) event.title = title;
+    if (description !== undefined) event.description = description;
+    if (fee !== undefined) event.fee = fee;
+    if (location !== undefined) event.location = location;
+
+    await event.save();
+    res
+      .status(200)
+      .json({ message: "Event updated successfully.", data: event });
+  } catch (error: any) {
+    console.error("Update event by id error:", error);
     res.status(500).json({
       message: "Internal server error.",
       error: error?.message || error,

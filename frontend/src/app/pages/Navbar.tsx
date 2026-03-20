@@ -49,10 +49,12 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
 
         {/* Profile Area */}
        <div>
-        <img alt="Profile" className="h-10 w-10 rounded-full cursor-pointer fixed top-4 right-4 hover:ring-2 hover:ring-gray-300 transition duration-300" />
-       <div>
-        <h6></h6>
-       </div>
+        <Link href="/profile">
+          <img alt="Profile" className="h-10 w-10 rounded-full cursor-pointer fixed top-4 right-4 hover:ring-2 hover:ring-gray-300 transition duration-300" />
+        </Link>
+        <div>
+          <h6></h6>
+        </div>
        </div>
        <div>
        </div>

@@ -212,10 +212,9 @@ export default function PostDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-    
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        {/* Back */}
+    <div className="h-screen bg-slate-50">
+      <div className=" mx-auto px-4 sm:px-6 py-8">
+        {/* Back button*/}
         <button
           onClick={() => router.back()}
           className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 mb-6 transition-colors"
@@ -224,7 +223,7 @@ export default function PostDetailPage() {
           Back to Feed
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <div className="grid grid-cols-1  lg:grid-cols-2 gap-6 items-start">
           {/* Left Column*/}
           <div className="space-y-4">
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
