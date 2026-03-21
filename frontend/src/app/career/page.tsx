@@ -10,6 +10,7 @@ import {
   Loader2,
   EllipsisVertical,
 } from "lucide-react";
+import Link from "next/link";
 
 type Job = {
   jobId: number;
@@ -70,8 +71,8 @@ export default function CareerPage() {
     try {
       const response = await fetch(`${API_BASE}/api/jobs`);
       if (!response.ok) throw new Error("Failed to load jobs");
-      const data: Job[] = await response.json();
-      setJobs(data);
+      const data = await response.json();
+      setJobs(Array.isArray(data) ? data : (data?.data ?? []));
     } catch (e) {
       setError(
         "Could not load jobs. Make sure backend is running on port 5000.",
@@ -257,16 +258,14 @@ export default function CareerPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {filteredJobs.map((job) => (
-                  <div key={job.jobId}>
-                    <article
-                      onClick={() => handleOpenJobModal(job.jobId)}
-                      className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer"
-                    >
-                      <div className="">
+                  <Link key={job.jobId} href={`/career/${job.jobId}`}>
+                    <article className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer">
+                      <div>
                         {String(job.userId) === String(currentUserId) && (
                           <EllipsisVertical
-                            className="ml-85 cursor-pointer"
+                            className="ml-auto cursor-pointer"
                             onClick={(e) => {
+                              e.preventDefault();
                               e.stopPropagation();
                               toggleDropdown(job.jobId);
                             }}
@@ -276,25 +275,12 @@ export default function CareerPage() {
                           {job.title}
                         </h2>
                       </div>
-                      {openDropdownJobId === job.jobId && (
-                        <div className="absolute ml-70 bg-white border border-slate-200 rounded-lg shadow-lg p-2 z-10">
-                          <button className="block w-full text-left px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 rounded">
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteJob(job.jobId)}
-                            className="block w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
+
                       <div className="mt-3 space-y-1.5 text-sm text-slate-600">
                         <p className="flex items-center gap-2">
                           <Building2 className="w-4 h-4 text-slate-400" />
                           {job.company}
                         </p>
-
                         {job.location && (
                           <p className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-slate-400" />
@@ -326,46 +312,7 @@ export default function CareerPage() {
                         </span>
                       </div>
                     </article>
-                    {activeJobId === job.jobId && (
-                      <div className="fixed inset-0 bg-black/20 backdrop-blur bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
-                          <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                            {job.title}
-                          </h3>
-                          <div className="mt-3 space-y-1.5 text-sm text-slate-600">
-                            <p className="flex items-center gap-2">
-                              <Building2 className="w-4 h-4 text-slate-400" />
-                              {job.company}
-                            </p>
-
-                            <p className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4 text-slate-400" />
-                              {job.location}
-                            </p>
-
-                            <p className="flex items-center gap-2">
-                              <Wallet className="w-4 h-4 text-slate-400" />
-                              {job.salary}
-                            </p>
-                          </div>
-                          <p className="mt-4 text-sm text-slate-700 line-clamp-4">
-                            Description: {job.description}
-                          </p>
-                          <div className="flex-row m-3">
-                            <button className=" py-1 rounded-xl bg-indigo-600 text-white font-10px hover:bg-indigo-700 transition">
-                              Apply Now
-                            </button>
-                            <button
-                              onClick={() => setActiveJobId(null)}
-                              className=" py-1 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition"
-                            >
-                              Close
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
