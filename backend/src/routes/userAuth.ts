@@ -10,7 +10,7 @@ router.post("/register", register);
 router.post("/login", login);
 router.get("/users", getUsers);
 
-// Profile route removed
+
 
 router.get("/verify/:token", async (req, res) => {
   try {

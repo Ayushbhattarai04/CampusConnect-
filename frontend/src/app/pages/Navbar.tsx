@@ -1,13 +1,52 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Menu, Plus, Search } from "lucide-react";
+import { Menu, Plus, Search, Users } from "lucide-react";
 import Sidebar from "./Sidebar";
 import Link from "next/link";
+import { userAgent } from "next/server";
+import { userInfo } from "os";
+import { useParams } from "next/navigation";
+type UserInfo = {
+  userId: number;
+  username: string;
+  email: string;
+  profilePicUrl: string;
+  User?: { username?: string };
+};
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
 export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
-  // Profile logic removed for now
- 
+  const [users, setUsers] = useState<UserInfo | null>(null);
+  const { id } = useParams();
 
+  const userData =
+    typeof window !== "undefined" ? localStorage.getItem("user") : null;
+  let userId = "";
+  let username = "";
+  if (userData) {
+    try {
+      const parsed = JSON.parse(userData);
+      userId = parsed.id;
+      username = parsed.username;
+    } catch {}
+  }
+
+  useEffect(() => {
+    const fetchProfileInfo = async () => {
+      if (!id) return;
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/profile/${id}`);
+        if (!response.ok) throw new Error("Failed to fetch user info");
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+
+    fetchProfileInfo();
+  }, []);
 
   return (
     <nav className="bg-violet-800 p-2 fixed w-full top-0  z-12 pt-14 shadow-lg border-gray-400 ">
@@ -48,16 +87,17 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
         </div>
 
         {/* Profile Area */}
-       <div>
-        <Link href="/profile">
-          <img alt="Profile" className="h-10 w-10 rounded-full cursor-pointer fixed top-4 right-4 hover:ring-2 hover:ring-gray-300 transition duration-300" />
-        </Link>
-        <div>
-          <h6></h6>
+        <div className="  fixed top-4 right-4 flex items-center gap-2">
+          <Link href="/profile">
+            <img
+              src={users?.profilePicUrl || "/default-profile.png"}
+              alt="Profile"
+              className="h-10 w-10 rounded-full cursor-pointer   top-4 right-4 hover:ring-2 hover:ring-gray-300 transition duration-300"
+            />
+          </Link>
+
+          <a className="text-white text-sm ml-2  top-14 right-4">{username}</a>
         </div>
-       </div>
-       <div>
-       </div>
       </div>
     </nav>
   );
