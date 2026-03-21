@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import EventRegistration from "../models/EventRegistration";
 import User from "../models/User";
+import Events from "../models/Events";
 import nodemailer from "nodemailer";
-
-
+import { Op } from "sequelize";
 
 // Create / Register for an event
 export const registerForEvent = async (
@@ -11,12 +11,22 @@ export const registerForEvent = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const { eventId, userId, registeredName, registeredemail, numberoftickets } = req.body;
+    const {
+      eventId,
+      userId,
+      registeredname,
+      registeredemail,
+      numberoftickets,
+    } = req.body;
     // Validate required fields
-    if (!eventId || !userId || !registeredName || !registeredemail || !numberoftickets) {
-      res
-        .status(400)
-        .json({ message: "All fields are required." });
+    if (
+      !eventId ||
+      !userId ||
+      !registeredname ||
+      !registeredemail ||
+      !numberoftickets
+    ) {
+      res.status(400).json({ message: "All fields are required." });
       return;
     }
 
@@ -31,7 +41,7 @@ export const registerForEvent = async (
     const registration = await EventRegistration.create({
       eventId,
       userId,
-      registeredName,
+      registeredname,
       registeredemail,
       numberoftickets,
     });
@@ -41,29 +51,27 @@ export const registerForEvent = async (
       data: registration,
     });
 
-
     const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+      host: "smtp.gmail.com",
+      port: Number(process.env.EMAIL_PORT),
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-await transporter.sendMail({
-  from: `"CampusConnect" <${process.env.EMAIL_USER}>`,
-  to: registeredemail,
-  subject: "Your Event Ticket",
-  html: `
+    await transporter.sendMail({
+      from: `"CampusConnect" <${process.env.EMAIL_USER}>`,
+      to: registeredemail,
+      subject: "Your Event Ticket",
+      html: `
   <div>
-  <h2>Your are welcomed in our ${eventId}</h2>
-    <p>Hi ${registeredName}, your ticket for event #${eventId} is confirmed.</p>
+  <h2>Your are welcomed in our Event Your e }</h2>
+    <p>Hi ${registeredname}, your ticket for event #${eventId} is confirmed.</p>
   </div>
   `,
-});
-
+    });
   } catch (error: any) {
     console.error("Register for event error:", error);
     res.status(500).json({
@@ -79,10 +87,14 @@ export const getEventRegistrations = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const { eventId } = req.params;
+    const eventId = Number(req.query.eventId);
+    if (!eventId) {
+      res.status(400).json({ message: "Valid eventId query is required." });
+      return;
+    }
+
     const registrations = await EventRegistration.findAll({
       where: { eventId },
-      include: [{ model: User, attributes: ["id", "name", "email"] }],
     });
     res.status(200).json({
       message: "Event registrations retrieved successfully.",
@@ -97,6 +109,65 @@ export const getEventRegistrations = async (
   }
 };
 
+// Get total registrations for all events owned by a user
+export const getOwnerRegistrationCount = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const ownerId = Number(req.params.ownerId);
+
+    if (!ownerId) {
+      res.status(400).json({ message: "Valid ownerId is required." });
+      return;
+    }
+
+    const ownerEvents = await Events.findAll({
+      where: { userId: ownerId },
+      attributes: ["eventId"],
+    });
+
+    const eventIds = ownerEvents
+      .map((event) => event.eventId)
+      .filter((eventId): eventId is number => typeof eventId === "number");
+
+    if (eventIds.length === 0) {
+      res.status(200).json({
+        message: "Owner registration count retrieved successfully.",
+        data: {
+          ownerId,
+          eventCount: 0,
+          totalRegistrations: 0,
+        },
+      });
+      return;
+    }
+
+    const totalRegistrations = await EventRegistration.count({
+      where: {
+        eventId: {
+          [Op.in]: eventIds,
+        },
+      },
+    });
+
+    res.status(200).json({
+      message: "Owner registration count retrieved successfully.",
+      data: {
+        ownerId,
+        eventCount: eventIds.length,
+        totalRegistrations,
+      },
+    });
+  } catch (error: any) {
+    console.error("Get owner registration count error:", error);
+    res.status(500).json({
+      message: "Internal server error.",
+      error: error?.message || error,
+    });
+  }
+};
+
 // Get registration by id
 export const getRegistrationById = async (
   req: Request,
@@ -104,9 +175,7 @@ export const getRegistrationById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const registration = await EventRegistration.findByPk(id, {
-      include: [{ model: User, attributes: ["id", "name", "email"] }],
-    });
+    const registration = await EventRegistration.findByPk(id);
     if (!registration) {
       res.status(404).json({ message: "Registration not found." });
       return;
@@ -137,7 +206,7 @@ export const updateRegistration = async (
       res.status(404).json({ message: "Registration not found." });
       return;
     }
-    registration.registeredName = registeredName || registration.registeredName;
+    registration.registeredname = registeredName || registration.registeredname;
     await registration.save();
     res.status(200).json({
       message: "Registration updated successfully.",

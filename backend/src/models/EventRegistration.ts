@@ -6,7 +6,7 @@ interface EventRegistrationAttributes {
   registrationId?: number;
   eventId?: number;
   userId: number;
-  registeredName: string;
+  registeredname: string;
   registeredemail?: string;
   numberoftickets?: number;
   createdAt?: Date;
@@ -27,7 +27,7 @@ class EventRegistration
 {
   eventId?: number;
   userId!: number;
-  registeredName!: string;
+  registeredname!: string;
   registeredemail?: string;
   numberoftickets?: number;
   createdAt?: Date;
@@ -60,7 +60,7 @@ EventRegistration.init(
       },
       onDelete: "CASCADE",
     },
-    registeredName: {
+    registeredname: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
