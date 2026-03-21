@@ -7,6 +7,7 @@ import "./models/Events";
 import "./models/Comments";
 import "./models/Profile";
 import "./models/EventRegistration";
+import "./models/JobApplied";
 
 import express from "express";
 import cors from "cors";
@@ -21,6 +22,7 @@ import tutionRoutes from "./routes/tution";
 import eventsRoutes from "./routes/events";
 import profileRoutes from "./routes/profile";
 import eventRegistrationRoutes from "./routes/eventregistration";
+import jobAppliedRoutes from "./routes/jobappllied";
 
 dotenv.config();
 
@@ -46,6 +48,7 @@ app.use("/api/tution", tutionRoutes);
 app.use("/api/events", eventsRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/event-registration", eventRegistrationRoutes);
+app.use("/api/job-applications", jobAppliedRoutes);
 
 // Test route
 app.get("/", (req, res) => {
