@@ -1,6 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  PenLine,
+  X,
+  Check,
+  Mail,
+  Building2,
+  Hash,
+} from "lucide-react";
 
 interface ProfileData {
   name: string;
@@ -8,47 +16,35 @@ interface ProfileData {
   email: string;
   bio: string;
   institution: string;
-  college: string;
   studId: string;
-  profilePic: string;
+  profilepic?: string;
 }
 
-const defaultProfile: ProfileData = {
-  name: "Ayush bhattarai",
-  username: "Ayush",
-  email: "ayush@university.edu",
-  bio: "Computer science student passionate about web development and database systems. Building cool things one commit at a time.",
-  institution: "Tribhuvan University",
-  college: "Institute of Engineering",
-  studId: "TU-075-BCT-042",
-  profilePic: "",
-};
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+
 export default function Profile() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
-  const [profile, setProfile] = useState<ProfileData>(defaultProfile);
-  const [draft, setDraft] = useState<ProfileData>(defaultProfile);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const toggleDropdown = () => {
-    setDropdownOpen((prev) => !prev);
-  };
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [draft, setDraft] = useState<ProfileData>({
+    name: "",
+    username: "",
+    email: "",
+    bio: "",
+    institution: "",
+    studId: "",
+  });
 
   const handleSave = async () => {
-    if (!userId) {
-      setError("User not found. Please login again.");
-      return;
-    }
-
+    if (!userId) return;
     setSaving(true);
     setError("");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/profile/${userId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/profile/${userId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -57,45 +53,40 @@ export default function Profile() {
           institution: draft.institution,
           studId: draft.studId,
           bio: draft.bio,
-          profilePic: draft.profilePic,
+          profilepic: draft.profilepic,
         }),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to save profile");
-      }
-
-      const data = await response.json();
+      if (!res.ok) throw new Error("Failed to save profile");
+      const data = await res.json();
       const merged: ProfileData = {
-        ...draft,
+        name: draft.name,
         username: data?.User?.username ?? draft.username,
         email: data?.User?.email ?? draft.email,
         institution: data?.User?.institution ?? draft.institution,
         studId: data?.User?.studId ?? draft.studId,
         bio: data?.bio ?? draft.bio,
-        profilePic: data?.profilePic ?? draft.profilePic,
+        profilepic: data?.User?.profilepic ?? draft.profilepic,
       };
-
       setProfile(merged);
       setDraft(merged);
+      setEditing(false);
 
-      const storedUserRaw = localStorage.getItem("user");
-      if (storedUserRaw) {
+      const stored = localStorage.getItem("user");
+      if (stored) {
         try {
-          const storedUser = JSON.parse(storedUserRaw);
-          const updatedUser = {
-            ...storedUser,
+          const u = JSON.parse(stored);
+          const updated = {
+            ...u,
             username: merged.username,
             email: merged.email,
             institution: merged.institution,
             studId: merged.studId,
+            profilepic: merged.profilepic,
           };
-          localStorage.setItem("user", JSON.stringify(updatedUser));
-          localStorage.setItem("username", updatedUser.username);
+          localStorage.setItem("user", JSON.stringify(updated));
+          localStorage.setItem("username", updated.username);
         } catch {}
       }
-
-      setEditing(false);
     } catch (e: any) {
       setError(e?.message || "Could not save profile.");
     } finally {
@@ -104,51 +95,33 @@ export default function Profile() {
   };
 
   const handleCancel = () => {
-    setDraft(profile);
+    if (profile) setDraft(profile);
     setEditing(false);
   };
-
-  const initials = profile.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
 
   useEffect(() => {
     const fetchProfile = async (id: number) => {
       setLoading(true);
-      setError("");
       try {
-        const response = await fetch(`${API_BASE_URL}/api/profile/${id}`);
-        if (!response.ok) throw new Error("Failed to load profile");
-        const data = await response.json();
-
-        const userRaw = localStorage.getItem("user");
-        let localUser: any = null;
-        if (userRaw) {
+        const res = await fetch(`${API_BASE_URL}/api/profile/${id}`);
+        if (!res.ok) throw new Error("Failed to load profile");
+        const data = await res.json();
+        const stored = localStorage.getItem("user");
+        let local: any = null;
+        if (stored)
           try {
-            localUser = JSON.parse(userRaw);
+            local = JSON.parse(stored);
           } catch {}
-        }
 
         const mapped: ProfileData = {
-          name: localUser?.username || defaultProfile.name,
-          username:
-            data?.User?.username ||
-            localUser?.username ||
-            defaultProfile.username,
-          email: data?.User?.email || localUser?.email || defaultProfile.email,
+          name: local?.username || data?.User?.username || "",
+          username: data?.User?.username || local?.username || "",
+          email: data?.User?.email || local?.email || "",
           bio: data?.bio || "",
-          institution:
-            data?.User?.institution ||
-            localUser?.institution ||
-            defaultProfile.institution,
-          college: defaultProfile.college,
-          studId:
-            data?.User?.studId || localUser?.studId || defaultProfile.studId,
-          profilePic: data?.profilePic || "",
+          institution: data?.User?.institution || local?.institution || "",
+          studId: data?.User?.studId || local?.studId || "",
+          profilepic: data?.User?.profilepic || local?.profilepic || "",
         };
-
         setProfile(mapped);
         setDraft(mapped);
       } catch (e: any) {
@@ -158,206 +131,245 @@ export default function Profile() {
       }
     };
 
-    const userRaw = localStorage.getItem("user");
-    if (!userRaw) {
-      setError("No logged-in user found. Please login again.");
+    const stored = localStorage.getItem("user");
+    if (!stored) {
+      setError("Please login to view your profile.");
       setLoading(false);
       return;
     }
-
     try {
-      const parsed = JSON.parse(userRaw);
+      const parsed = JSON.parse(stored);
       if (!parsed?.id) {
-        setError("Invalid user session. Please login again.");
+        setError("Invalid session. Please login again.");
         setLoading(false);
         return;
       }
       setUserId(parsed.id);
       fetchProfile(parsed.id);
     } catch {
-      setError("Invalid user session. Please login again.");
+      setError("Invalid session. Please login again.");
       setLoading(false);
     }
   }, []);
 
+  const initials =
+    (profile?.name || "")
+      .split(" ")
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase() || "?";
+
   if (loading) {
-    return <div className="w-full p-10 text-gray-600">Loading profile...</div>;
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="w-7 h-7 border-2 border-gray-200 border-t-orange-400 rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
-    <div className="w-full max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6 font-sans">
-      <ArrowLeft
-        className="top-1 h-6 w-6 text-gray-600 cursor-pointer mb-4"
-        onClick={() => window.history.back()}
-      />
-      {error && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">
-          {error}
-        </div>
-      )}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-        {/* Banner to add later */}
-        <div className="h-40 bg-indigo-600" />
-
-        <div className="px-4 sm:px-5 pb-5">
-          {/* Profile pic row */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 -mt-7 mb-3">
-            <div className="w-60 h-60 sm:w-50 sm:h-50 rounded-full bg-indigo-600 border-[3px] border-white flex items-center justify-center text-white text-xl font-semibold">
-              {initials}
-            </div>
-
-            {!editing ? (
-              <button
-                onClick={() => setEditing(true)}
-                className="w-full sm:w-auto px-4 py-1.5 text-sm border border-indigo-500 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors"
-              >
-                Edit profile
-              </button>
-            ) : (
-              <div className="flex w-full sm:w-auto gap-2">
-                <button
-                  onClick={handleCancel}
-                  className="flex-1 sm:flex-none px-4 py-1.5 text-sm border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="flex-1 sm:flex-none px-4 py-1.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                >
-                  {saving ? "Saving..." : "Save"}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Name */}
-          {editing ? (
-            <input
-              className="w-full mb-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-300"
-              value={draft.name}
-              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-              placeholder="Full name"
-            />
-          ) : (
-            <p className="text-lg font-semibold text-gray-900 mb-0.5">
-              {profile.name}
-            </p>
-          )}
-
-          <p className="text-sm text-indigo-500 mb-3">{profile.username}</p>
-
-          {/* Bio */}
-          {editing ? (
-            <textarea
-              className="w-full mb-4 px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-300 resize-none h-16"
-              value={draft.bio}
-              onChange={(e) => setDraft({ ...draft, bio: e.target.value })}
-              placeholder="Short bio"
-            />
-          ) : (
-            <p className="text-sm text-gray-500 leading-relaxed mb-4 pb-4 border-b border-gray-100">
-              {profile.bio}
-            </p>
-          )}
-
-          {/* Section label */}
-          <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500 mb-2">
-            Profile
-          </p>
-
-          {/* Fields */}
-          <Field
-            label="Email"
-            value={draft.email}
-            display={profile.email}
-            editing={editing}
-            onChange={(v) => setDraft({ ...draft, email: v })}
-          />
-          <Field
-            label="Institution"
-            value={draft.institution}
-            display={profile.institution}
-            editing={editing}
-            onChange={(v) => setDraft({ ...draft, institution: v })}
-          />
-
-          <Field
-            label="Student ID"
-            value={draft.studId}
-            display={profile.studId}
-            editing={editing}
-            onChange={(v) => setDraft({ ...draft, studId: v })}
-            badge
-          />
-        </div>
+    <div className="min-h-screen bg-stone-50">
+      <div className="w-full max-w-7xl">
+        <button
+          onClick={() => window.history.back()}
+          className="p-1.5 -ml-1.5  rounded-lg hover:bg-gray-200/60 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 text-gray-500" />
+        </button>
       </div>
-      <div className="relative inline-block mt-8">
-        {dropdownOpen && (
-          <div className="absolute left-0 mt-7 w-44 sm:w-48 bg-white shadow-lg rounded-r-2xl z-10">
-            <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              Post
-            </button>
-            <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              Events
-            </button>
-            <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              Jobs
-            </button>
-            <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              Classes
-            </button>
-            <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              Community
-            </button>
+      <div className="max-w-4xl mx-auto px-5 pt-6 pb-16">
+        {/* Error */}
+        {error && (
+          <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
           </div>
         )}
-        <button
-          onClick={dropdownOpen ? () => setDropdownOpen(false) : () => setDropdownOpen((prev) => !prev)}
-          className="px-4 py-2 text-indigo-600 hover:text-indigo-800 rounded-md"
-        >
-          Your Content
-        </button>
-        <div>pOST</div>
+
+        {/* Card */}
+        <div className=" bg-stone-50 pt-10 overflow-hidden">
+          <div className="px-6 pb-6">
+            {/* Avatar + actions */}
+            <div className="flex items-end justify-between -mt-9 mb-4">
+              <div className="w-30 h-30 rounded-full  bg-slate-900 flex items-center justify-center text-white text-lg font-semibold shadow-md">
+                {profile.profilepic || initials}
+              </div>
+
+              {!editing ? (
+                <button
+                  onClick={() => setEditing(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium border border-gray-200 text-slate-900 rounded-xl hover:bg-stone-50 transition-all"
+                >
+                  <PenLine className="w-3.5 h-3.5" />
+                  Edit
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleCancel}
+                    className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium border border-gray-200 text-gray-500 rounded-xl hover:bg-stone-50 transition-all"
+                  >
+                    <X className="w-3.5 h-3.5" /> Cancel
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium bg-slate-900 text-white rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
+                  >
+                    <Check className="w-3.5 h-3.5" />{" "}
+                    {saving ? "Saving..." : "Save"}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Name + username */}
+            {editing ? (
+              <div className="space-y-2 mb-3">
+                <input
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/30"
+                  value={draft.name}
+                  onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+                  placeholder="UserName"
+                />
+              </div>
+            ) : (
+              <div className="mb-3">
+                <h1 className="text-lg font-semibold text-slate-900">
+                  {profile?.name || "—"}
+                </h1>
+                <p className="text-sm text-gray-400">
+                  @{profile?.username || "—"}
+                </p>
+              </div>
+            )}
+
+            {/* Bio */}
+            {editing ? (
+              <textarea
+                className="w-full mb-5 px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/30 resize-none h-20"
+                value={draft.bio}
+                onChange={(e) => setDraft({ ...draft, bio: e.target.value })}
+                placeholder="Short bio..."
+              />
+            ) : (
+              <p className="text-sm text-gray-500 leading-relaxed mb-5">
+                {profile?.bio || (
+                  <span className="italic text-gray-400">No bio</span>
+                )}
+              </p>
+            )}
+
+            <div />
+
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-400 mb-4">
+              Details
+            </h2>
+
+            {/* Fields */}
+            <div className="space-y-0.5">
+              <DetailField
+                icon={Mail}
+                label="Email"
+                value={draft.email}
+                display={profile?.email || ""}
+                editing={editing}
+                onChange={(v) => setDraft({ ...draft, email: v })}
+              />
+              <DetailField
+                icon={Building2}
+                label="Institution"
+                value={draft.institution}
+                display={profile?.institution || ""}
+                editing={editing}
+                onChange={(v) => setDraft({ ...draft, institution: v })}
+              />
+              <DetailField
+                icon={Hash}
+                label="Student ID"
+                value={draft.studId}
+                display={profile?.studId || ""}
+                editing={editing}
+                onChange={(v) => setDraft({ ...draft, studId: v })}
+                mono
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="w-full max-w-380 mx-auto border-b border-gray-400 border-1" />
+      <div className=" mt-5 mx-auto max-w-7xl bg-stone-50  border-gray-500 ">
+        <label className=" text-xl m-20 text-gray-500">
+          <button className="hover:text-orange-400 focus:text-2xl focus:text-orange-500  transition-all transition-300ms ">
+            Posts
+          </button>
+        </label>
+        <label className=" text-xl m-20 text-gray-500">
+          <button className="hover:text-orange-400 focus:text-2xl focus:text-orange-500 transition-all transition-300ms">
+            Events
+          </button>
+        </label>
+        <label className=" text-xl m-20 text-gray-500">
+          <button className="hover:text-orange-400 focus:text-2xl focus:text-orange-500 transition-all transition-300ms">
+            Jobs
+          </button>
+        </label>
+        <label className=" text-xl m-20 text-gray-500">
+          <button className="hover:text-orange-400 focus:text-2xl focus:text-orange-500 transition-all transition-300ms">
+            Tutions
+          </button>
+        </label>
+        <label className=" text-xl m-20   text-gray-500">
+          <button className="hover:text-orange-400 focus:text-2xl focus:text-orange-500 transition-all transition-300ms">
+            Communities
+          </button>
+        </label>
       </div>
     </div>
   );
 }
 
-interface FieldProps {
-  label: string;
-  value: string;
-  display: string;
-  editing: boolean;
-  onChange: (v: string) => void;
-  badge?: boolean;
-}
-
-function Field({
+function DetailField({
+  icon: Icon,
   label,
   value,
   display,
   editing,
   onChange,
-  badge,
-}: FieldProps) {
+  mono,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  display: string;
+  editing: boolean;
+  onChange: (v: string) => void;
+  mono?: boolean;
+}) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b border-gray-50 last:border-none">
-      <span className="text-sm text-gray-400">{label}</span>
-      {editing ? (
-        <input
-          className="w-full sm:w-auto sm:max-w-50 px-2 py-1 text-sm border border-gray-200 rounded-md outline-none focus:ring-2 focus:ring-indigo-300"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      ) : badge ? (
-        <span className="text-xs font-medium bg-indigo-50 text-indigo-600 px-3 py-0.5 rounded-full">
-          {display}
-        </span>
-      ) : (
-        <span className="text-sm font-medium text-gray-800">{display}</span>
-      )}
+    <div className="flex items-center gap-3 py-3 border-b border-stone-50 last:border-none">
+      <div className="w-8 h-8 rounded-lg bg-stone-50 flex items-center justify-center shrink-0">
+        <Icon className="w-4 h-4 text-gray-400" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">
+          {label}
+        </p>
+        {editing ? (
+          <input
+            className="w-full px-2 py-1 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-orange-400/30"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        ) : (
+          <p
+            className={`text-sm text-slate-900 truncate ${mono ? "font-mono" : "font-medium"}`}
+            style={mono ? { fontSize: "0.8rem" } : {}}
+          >
+            {display || "—"}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

@@ -25,11 +25,11 @@ export default function Sidebar({
 }: SidebarProps) {
   return (
     <aside
-      className={`border-gray-900 bg-white shadow-lg z-2 pb-25 flex flex-col transition-all duration-500 ${open ? "w-53 " : "w-16"} fixed top-15 left-0 h-screen overflow-hidden`}
+      className={`border-gray-900 bg-slate-100 shadow-lg z-2 pb-265flex flex-col transition-all duration-500 ${open ? "w-53 " : "w-16"} fixed top-15 left-0 h-screen overflow-hidden`}
     >
       <ul className="space-y-11 mt-10 pl-3 pr-2">
         <li
-          className="flex items-center cursor-pointer  text-violet-600 hover:text-violet-900  px-2"
+          className="flex items-center cursor-pointer  text-slate-600 hover:text-violet-900  px-2"
           onClick={() => {
             if (typeof onSelectSection === "function") onSelectSection("Feed");
           }}
@@ -38,7 +38,7 @@ export default function Sidebar({
           {open && <span className="ml-3">Feed</span>}
         </li>
         <li
-          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2 "
+          className="flex items-center cursor-pointer text-slate-600 hover:text-violet-900 px-2 "
           onClick={() => {
             if (typeof onSelectSection === "function")
               onSelectSection("Communities");
@@ -48,7 +48,7 @@ export default function Sidebar({
           {open && <span className="ml-3">Communities</span>}
         </li>
         <li
-          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2"
+          className="flex items-center cursor-pointer text-slate-600 hover:text-violet-900 px-2"
           onClick={() => {
             if (typeof onSelectSection === "function")
               onSelectSection("Events");
@@ -58,7 +58,7 @@ export default function Sidebar({
           {open && <span className="ml-3">Events</span>}
         </li>
         <li
-          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2"
+          className="flex items-center cursor-pointer text-slate-600 hover:text-violet-900 px-2"
           onClick={() => {
             if (typeof onSelectSection === "function") onSelectSection("Chat");
           }}
@@ -67,7 +67,7 @@ export default function Sidebar({
           {open && <span className="ml-3">Chat</span>}
         </li>
         <li
-          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2"
+          className="flex items-center cursor-pointer text-slate-600 hover:text-violet-900 px-2"
           onClick={() => {
             if (typeof onSelectSection === "function")
               onSelectSection("Tution");
@@ -77,7 +77,7 @@ export default function Sidebar({
           {open && <span className="ml-3">Tution</span>}
         </li>
         <li
-          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2"
+          className="flex items-center cursor-pointer text-slate-600 hover:text-violet-900 px-2"
           onClick={() => {
             if (typeof onSelectSection === "function")
               onSelectSection("Career");
@@ -88,7 +88,7 @@ export default function Sidebar({
         </li>
 
         <li
-          className="flex items-center cursor-pointer text-violet-600 hover:text-violet-900 px-2 mt-70"
+          className="flex items-center cursor-pointer text-slate-600 hover:text-violet-900 px-2 mt-70"
           onClick={() => {
             if (typeof onSelectSection === "function")
               onSelectSection("Settings");
@@ -99,7 +99,7 @@ export default function Sidebar({
         </li>
         {open && (
           <li className="mt-30">
-            <h6 className="text-blue-600 text-sm"> © Campus Connect 2026</h6>
+            <h6 className="text-slate-600 text-sm hover:underline"> © Campus Connect 2026</h6>
           </li>
         )}
       </ul>

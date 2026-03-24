@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import { Menu, Plus, Search, Users } from "lucide-react";
 import Sidebar from "./Sidebar";
 import Link from "next/link";
-import { userAgent } from "next/server";
-import { userInfo } from "os";
 import { useParams } from "next/navigation";
 type UserInfo = {
   userId: number;
@@ -18,21 +16,18 @@ const API_BASE_URL =
 
 export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
   const [users, setUsers] = useState<UserInfo | null>(null);
+  const [username, setUsername] = useState("");
   const { id } = useParams();
 
-  const userData =
-    typeof window !== "undefined" ? localStorage.getItem("user") : null;
-  let userId = "";
-  let username = "";
-  if (userData) {
-    try {
-      const parsed = JSON.parse(userData);
-      userId = parsed.id;
-      username = parsed.username;
-    } catch {}
-  }
-
   useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        setUsername(parsed?.username || "");
+      } catch {}
+    }
+
     const fetchProfileInfo = async () => {
       if (!id) return;
       try {
@@ -49,7 +44,7 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
   }, []);
 
   return (
-    <nav className="bg-violet-800 p-2 fixed w-full top-0  z-12 pt-14 shadow-lg border-gray-400 ">
+    <nav className="bg-slate-800 p-2 fixed w-full top-0  z-12 pt-14 shadow-lg border-gray-400 ">
       <div className="container flex items-center justify-between">
         {/* Menu Area */}
         <div
@@ -73,18 +68,8 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
           </div>
         </div>
 
-        {/* Search bar area */}
-        <div className="space-x-10 fixed top-4  right-150 flex items-center">
-          <input
-            type="text"
-            placeholder="Search..."
-            className=" px-40 py-1 rounded-2xl   bg-gray-200 focus:outline-none focus:ring-1 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-gray-200 transition duration-300"
-          />
-        </div>
-        {/* Search bar button */}
-        <div className="space-x-4 fixed top-4  right-140 flex items-center">
-          <Search className="h-6 w-6 text-white cursor-pointer" />
-        </div>
+        
+        
 
         {/* Profile Area */}
         <div className="  fixed top-4 right-4 flex items-center gap-2">
@@ -96,7 +81,7 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
             />
           </Link>
 
-          <a className="text-white text-sm ml-2  top-14 right-4">{username}</a>
+          <a className="text-white text-sm font-bold ml-2  top-14 right-4">{username}</a>
         </div>
       </div>
     </nav>
