@@ -214,7 +214,7 @@ export default function CareerPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left section: Jobs */}
           <section className="lg:col-span-2 space-y-5">
@@ -222,7 +222,7 @@ export default function CareerPage() {
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 flex items-center gap-2">
-                    <Briefcase className="w-7 h-7 text-indigo-600" />
+                    <Briefcase className="w-7 h-7 text-slate-600" />
                     Career Opportunities
                   </h1>
                   <p className="text-slate-600 mt-1">
@@ -230,7 +230,7 @@ export default function CareerPage() {
                   </p>
                 </div>
 
-                <div className="relative w-full sm:w-80">
+                <div className="relative w-full mx-auto sm:w-80">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     value={query}
@@ -340,28 +340,28 @@ export default function CareerPage() {
                   value={form.title}
                   onChange={handleInput}
                   placeholder="Job title *"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
                 />
                 <input
                   name="company"
                   value={form.company}
                   onChange={handleInput}
                   placeholder="Company *"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
                 />
                 <input
                   name="location"
                   value={form.location}
                   onChange={handleInput}
                   placeholder="Location"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
                 />
                 <input
                   name="salary"
                   value={form.salary}
                   onChange={handleInput}
                   placeholder="Salary (e.g. NPR 40,000/month)"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
                 />
                 <textarea
                   name="description"
@@ -369,13 +369,13 @@ export default function CareerPage() {
                   onChange={handleInput}
                   placeholder="Description"
                   rows={4}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 resize-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800 resize-none"
                 />
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 disabled:bg-indigo-400 transition"
+                  className="w-full py-2.5 rounded-xl bg-gray-900 text-white font-medium hover:bg-gray-700 disabled:bg-indigo-400 transition"
                 >
                   {submitting ? "Posting..." : "Post Job"}
                 </button>

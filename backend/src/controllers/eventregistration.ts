@@ -37,6 +37,13 @@ export const registerForEvent = async (
       return;
     }
 
+    // Check if event exists
+    const eventExists = await Events.findByPk(eventId);
+    if (!eventExists) {
+      res.status(404).json({ message: "Event not found." });
+      return;
+    }
+
     // Create event registration
     const registration = await EventRegistration.create({
       eventId,
@@ -51,27 +58,37 @@ export const registerForEvent = async (
       data: registration,
     });
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: Number(process.env.EMAIL_PORT),
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    // Email is optional: never fail the API request if email sending fails.
+    void (async () => {
+      try {
+        const emailUser = process.env.EMAIL_USER;
+        const emailPass = process.env.EMAIL_PASS;
+        if (!emailUser || !emailPass) return;
 
-    await transporter.sendMail({
-      from: `"CampusConnect" <${process.env.EMAIL_USER}>`,
-      to: registeredemail,
-      subject: "Your Event Ticket",
-      html: `
-  <div>
-  <h2>Your are welcomed in our Event Your e }</h2>
-    <p>Hi ${registeredname}, your ticket for event #${eventId} is confirmed.</p>
-  </div>
-  `,
-    });
+        const transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          port: Number(process.env.EMAIL_PORT) || 587,
+          secure: false,
+          auth: {
+            user: emailUser,
+            pass: emailPass,
+          },
+        });
+
+        await transporter.sendMail({
+          from: `"CampusConnect" <${emailUser}>`,
+          to: registeredemail,
+          subject: "Your Event Ticket",
+          html: `
+            <div>
+              <p>Hi ${registeredname}, your ticket for event #${eventId} is confirmed.</p>
+            </div>
+          `,
+        });
+      } catch (mailError) {
+        console.error("Send ticket email error:", mailError);
+      }
+    })();
   } catch (error: any) {
     console.error("Register for event error:", error);
     res.status(500).json({

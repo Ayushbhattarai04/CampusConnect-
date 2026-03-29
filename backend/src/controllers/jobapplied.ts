@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import path from "path";
 import fs from "fs";
 import JobApplied from "../models/JobApplied";
+import User from "../models/User";
 
 // create a new job application with CV uploaded
 export const applyForJob = async (
@@ -40,6 +41,7 @@ export const applyForJob = async (
       cv: req.file.path,
       cvOriginalName: req.file.originalname,
       cvType: req.file.mimetype,
+      status: "pending",
     });
 
     res.status(201).json({
@@ -54,11 +56,18 @@ export const applyForJob = async (
 
 // get all applications
 export const getAllApplications = async (
-  _req: Request,
+  req: Request,
   res: Response,
 ): Promise<void> => {
   try {
-    const applications = await JobApplied.findAll();
+    const { jobId } = req.query;
+    const whereClause = jobId ? { jobId: Number(jobId) } : undefined;
+
+    const applications = await JobApplied.findAll({
+      where: whereClause,
+      include: [{ model: User, attributes: ["id", "username", "email"] }],
+      order: [["createdAt", "DESC"]],
+    });
     res.status(200).json(applications);
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error });
@@ -77,6 +86,38 @@ export const getApplicationById = async (
       return;
     }
     res.status(200).json(application);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error });
+  }
+};
+
+export const updateApplicationStatus = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { appliedId } = req.params;
+    const { status } = req.body;
+    const validStatuses = ["accepted", "pending", "rejected"];
+
+    if (!validStatuses.includes(status)) {
+      res.status(400).json({ message: "Invalid status value" });
+      return;
+    }
+
+    const application = await JobApplied.findByPk(appliedId);
+    if (!application) {
+      res.status(404).json({ message: "Application not found" });
+      return;
+    }
+
+    application.status = status;
+    await application.save();
+
+    res.status(200).json({
+      message: "Application status updated",
+      application,
+    });
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error });
   }

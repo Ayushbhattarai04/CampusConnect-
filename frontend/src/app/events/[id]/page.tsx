@@ -250,7 +250,7 @@ export default function EventDetailPage() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-slate-400">
-          <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
           <p className="text-sm">Loading event...</p>
         </div>
       </div>
@@ -271,7 +271,7 @@ export default function EventDetailPage() {
           </p>
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-sm text-indigo-600 hover:underline mx-auto"
+            className="flex items-center gap-1.5 text-sm text-orange-600 hover:underline mx-auto"
           >
             <ArrowLeft className="w-4 h-4" /> Go back
           </button>
@@ -325,11 +325,11 @@ export default function EventDetailPage() {
             {/* Main card */}
             <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
               {/* Header banner */}
-              <div className="relative bg-indigo-700 px-6 py-8">
+              <div className="relative bg-slate-700 px-6 py-8">
                 <div />
-                <p className="relative text-indigo-200 text-sm mb-1">
+                <p className="relative text-slate-200 text-sm mb-1">
                   Organized by{" "}
-                  <span className="font-medium text-indigo-100">
+                  <span className="font-medium text-slate-100">
                     {event.organizer || event.User?.username || "Unknown"}
                   </span>
                 </p>
@@ -344,14 +344,14 @@ export default function EventDetailPage() {
                       onClick={() =>
                         router.push(`/events/${event.eventId}/edit`)
                       }
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 backdrop-blur-sm text-white hover:bg-white/25 text-xs font-medium transition-colors border border-white/20"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 backdrop-blur-sm text-white hover:bg-blue-600 text-xs font-medium transition-colors border border-white/20"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                       Edit
                     </button>
                     <button
                       onClick={() => setShowDeleteConfirm(true)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/80 backdrop-blur-sm text-white hover:bg-red-500 text-xs font-medium transition-colors border border-red-400/30"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm text-white hover:bg-red-500 text-xs font-medium transition-colors border border-white/20 "
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Delete
@@ -365,7 +365,7 @@ export default function EventDetailPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
                     <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                      <Calendar className="w-4 h-4 text-indigo-500" />
+                      <Calendar className="w-4 h-4 text-slate-500" />
                     </div>
                     <div>
                       <p className="text-xs text-slate-400">Event Date</p>
@@ -379,7 +379,7 @@ export default function EventDetailPage() {
 
                   <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
                     <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                      <User className="w-4 h-4 text-indigo-500" />
+                      <User className="w-4 h-4 text-slate-500" />
                     </div>
                     <div>
                       <p className="text-xs text-slate-400">Posted by</p>
@@ -392,7 +392,7 @@ export default function EventDetailPage() {
                   {event.location && (
                     <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
                       <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                        <MapPin className="w-4 h-4 text-indigo-500" />
+                        <MapPin className="w-4 h-4 text-slate-500" />
                       </div>
                       <div>
                         <p className="text-xs text-slate-400">Location</p>
@@ -404,13 +404,13 @@ export default function EventDetailPage() {
                   )}
 
                   {event.fee && (
-                    <div className="flex items-center gap-3 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-                        <DollarSign className="w-4 h-4 text-indigo-600" />
+                    <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                        <DollarSign className="w-4 h-4 text-slate-600" />
                       </div>
                       <div>
-                        <p className="text-xs text-indigo-400">Entry Fee</p>
-                        <p className="text-sm font-semibold text-indigo-700">
+                        <p className="text-xs ">Entry Fee</p>
+                        <p className="text-sm font-semibold text-slate-700">
                           {event.fee}
                         </p>
                       </div>
@@ -418,7 +418,6 @@ export default function EventDetailPage() {
                   )}
                 </div>
 
-                {/* Footer */}
                 <div className="pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-400">
                   <Clock className="w-3.5 h-3.5" />
                   Published on{" "}
@@ -442,186 +441,23 @@ export default function EventDetailPage() {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Right side */}
-          <aside className="lg:col-span-1 mt-15 space-y-6">
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-              <div className="bg-gradient-to-br from-indigo-50 to-slate-50 px-6 py-5 border-b border-slate-100">
-                <h2 className="text-base font-bold text-slate-800">
-                  Book Your Ticket
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Fill in your details to register for this event.
-                </p>
-              </div>
-
-              <div className="p-6 space-y-4">
-                {registrationsSuccess && !registrationError && (
-                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <p className="text-sm font-medium text-emerald-700">
-                      {registrationsSuccess}
-                    </p>
-                  </div>
-                )}
-
-                {registrationError && (
-                  <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-                    <p className="text-sm text-red-700">{registrationError}</p>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
-                    Registered Name
-                  </label>
-                  <input
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 focus:bg-white transition-all"
-                    placeholder="Enter name for registration"
-                    value={registerElements.registeredname}
-                    onChange={(e) => {
-                      setRegisterElements({
-                        ...registerElements,
-                        registeredname: e.target.value,
-                      });
-                      setRegistrationError("");
-                      setRegistrationsSuccess("");
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 focus:bg-white transition-all"
-                    placeholder="Enter your email"
-                    value={registerElements.registeredemail}
-                    onChange={(e) => {
-                      setRegisterElements({
-                        ...registerElements,
-                        registeredemail: e.target.value,
-                      });
-                      setRegistrationError("");
-                      setRegistrationsSuccess("");
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
-                    Number of Tickets
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 focus:bg-white transition-all"
-                    placeholder="1"
-                    value={registerElements.numberoftickets}
-                    onChange={(e) => {
-                      setRegisterElements({
-                        ...registerElements,
-                        numberoftickets: Number(e.target.value),
-                      });
-                      setRegistrationError("");
-                      setRegistrationsSuccess("");
-                    }}
-                  />
-                </div>
-
-                <button
-                  onClick={handleRegister}
-                  className="w-full px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-sm shadow-indigo-200"
-                >
-                  Register Now
-                </button>
-
-                {event.fee && (
-                  <p className="text-center text-xs text-slate-400">
-                    Entry fee:{" "}
-                    <span className="font-semibold text-indigo-600">
-                      {event.fee}
-                    </span>
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Other Events */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100">
-                <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
-                  Other Events
-                </h2>
-                <Search className="w-5 h-5 text-slate-400 hover:text-black" />
-                <input
-                  className="rounded-2xl p-1 pl-2 pr-15 border-gray-300 border-1 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                  placeholder="Search events..."
-                />
-              </div>
-              <div className="p-4 space-y-2">
-                {otherEvents.length === 0 && (
-                  <p className="text-sm text-slate-400 text-center py-4">
-                    No other events.
-                  </p>
-                )}
-                {otherEvents.map((e) => (
-                  <div
-                    key={e.eventId}
-                    onClick={() => router.push(`/events/${e.eventId}`)}
-                    className="w-full text-left rounded-xl border border-slate-100 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-100 px-4 py-3 transition-colors group"
-                  >
-                    <p className="text-sm font-semibold text-slate-700 group-hover:text-indigo-700 line-clamp-1">
-                      {e.title}
-                    </p>
-                    <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                      {e.schedules && (
-                        <span className="flex items-center gap-1 text-xs text-slate-400">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(e.schedules).toLocaleDateString()}
-                        </span>
-                      )}
-                      {e.location && (
-                        <span className="flex items-center gap-1 text-xs text-slate-400">
-                          <MapPin className="w-3 h-3" />
-                          {e.location}
-                        </span>
-                      )}
-                    </div>
-                    {e.fee && (
-                      <span className="inline-block mt-2 text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
-                        {e.fee}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </aside>
-        </div>
-      </div>
-
-      {/* events cretors event registrations lists */}
-      <div className="">
+            {/* events cretors event registrations lists */}
+      <div className="  mx-auto px-4 sm:px-6 py-10">
         {isOwner && (
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
             <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
               <button
                 onClick={handleToggleOwnerRegistrations}
                 className="w-full flex items-center justify-between px-2 py-1 hover:opacity-80 transition-opacity"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-                    <Users className="w-4 h-4 text-indigo-600" />
+                  <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+                    <Users className="w-4 h-4 text-orange-600" />
                   </div>
-                  <span className="text-lg font-medium text-indigo-600">
+                  <span className="text-lg font-medium text-slate-600">
                     Registrations
                   </span>
-                  <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-indigo-600 text-white text-xs font-bold">
+                  <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-orange-600 text-white text-xs font-bold">
                     {ownerRegistrationCount}
                   </span>
                 </div>
@@ -692,6 +528,171 @@ export default function EventDetailPage() {
           </div>
         )}
       </div>
+          </div>
+
+          {/* Right side */}
+          <aside className="lg:col-span-1 mt-15 space-y-6">
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-br from-indigo-50 to-slate-50 px-6 py-5 border-b border-slate-100">
+                <h2 className="text-base font-bold text-slate-800">
+                  Book Your Ticket
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Fill in your details to register for this event.
+                </p>
+              </div>
+
+              <div className="p-6 space-y-4">
+                {registrationsSuccess && !registrationError && (
+                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-3">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <p className="text-sm font-medium text-emerald-700">
+                      {registrationsSuccess}
+                    </p>
+                  </div>
+                )}
+
+                {registrationError && (
+                  <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                    <p className="text-sm text-red-700">{registrationError}</p>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
+                    Registered Name
+                  </label>
+                  <input
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 focus:bg-white transition-all"
+                    placeholder="Enter name for registration"
+                    value={registerElements.registeredname}
+                    onChange={(e) => {
+                      setRegisterElements({
+                        ...registerElements,
+                        registeredname: e.target.value,
+                      });
+                      setRegistrationError("");
+                      setRegistrationsSuccess("");
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 focus:bg-white transition-all"
+                    placeholder="Enter your email"
+                    value={registerElements.registeredemail}
+                    onChange={(e) => {
+                      setRegisterElements({
+                        ...registerElements,
+                        registeredemail: e.target.value,
+                      });
+                      setRegistrationError("");
+                      setRegistrationsSuccess("");
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
+                    Number of Tickets
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 focus:bg-white transition-all"
+                    placeholder="1"
+                    value={registerElements.numberoftickets}
+                    onChange={(e) => {
+                      setRegisterElements({
+                        ...registerElements,
+                        numberoftickets: Number(e.target.value),
+                      });
+                      setRegistrationError("");
+                      setRegistrationsSuccess("");
+                    }}
+                  />
+                </div>
+
+                <button
+                  onClick={handleRegister}
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800 text-white text-sm font-semibold hover:bg-orange-700 active:scale-[0.98] transition-all shadow-sm shadow-orange-200"
+                >
+                  Register Now
+                </button>
+
+                {event.fee && (
+                  <p className="text-center text-xs text-slate-400">
+                    Entry fee:{" "}
+                    <span className="font-semibold text-orange-600">
+                      {event.fee}
+                    </span>
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Other Events */}
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100">
+                <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
+                  Other Events
+                </h2>
+                <Search className="w-5 h-5 text-slate-400 hover:text-black" />
+                <input
+                  className="rounded-2xl p-1 pl-2 pr-15 border-gray-300 border-1 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Search events..."
+                />
+              </div>
+              <div className="p-4 space-y-2">
+                {otherEvents.length === 0 && (
+                  <p className="text-sm text-slate-400 text-center py-4">
+                    No other events.
+                  </p>
+                )}
+                {otherEvents.map((e) => (
+                  <div
+                    key={e.eventId}
+                    onClick={() => router.push(`/events/${e.eventId}`)}
+                    className="w-full text-left rounded-xl border border-slate-100 bg-slate-50 hover:bg-orange-50 hover:border-orange-100 px-4 py-3 transition-colors group"
+                  >
+                    <p className="text-sm font-semibold text-slate-700 group-hover:text-orange-700 line-clamp-1">
+                      {e.title}
+                    </p>
+                    <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                      {e.schedules && (
+                        <span className="flex items-center gap-1 text-xs text-slate-400">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(e.schedules).toLocaleDateString()}
+                        </span>
+                      )}
+                      {e.location && (
+                        <span className="flex items-center gap-1 text-xs text-slate-400">
+                          <MapPin className="w-3 h-3" />
+                          {e.location}
+                        </span>
+                      )}
+                    </div>
+                    {e.fee && (
+                      <span className="inline-block mt-2 text-xs font-semibold text-orange-600 bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-full">
+                        {e.fee}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
+        
+      </div>
+
+      
     </div>
   );
 }

@@ -12,6 +12,7 @@ interface AppliedAttributes {
   cvOriginalName?: string;
   cvType?: string;
   appliersemail?: string;
+  status: "accepted" | "rejected" | "pending";
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -32,6 +33,7 @@ class JobApplied
   declare appliersemail?: string;
   declare createdAt: Date;
   declare updatedAt: Date;
+  declare status: "accepted" | "rejected" | "pending";
 }
 
 JobApplied.init(
@@ -73,6 +75,11 @@ JobApplied.init(
     appliersemail: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    status: {
+      type: DataTypes.ENUM("accepted", "rejected", "pending"),
+      allowNull: false,
+      defaultValue: "rejected",
     },
     createdAt: {
       type: DataTypes.DATE,

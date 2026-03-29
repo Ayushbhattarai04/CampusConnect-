@@ -1,7 +1,16 @@
 "use client";
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Calendar, Search, User, EllipsisVertical } from "lucide-react";
+import {
+  Calendar,
+  Search,
+  User,
+  EllipsisVertical,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
+import Navbar from "../pages/Navbar";
+import Sidebar from "../pages/Sidebar";
 
 type Event = {
   eventId?: number;
@@ -214,30 +223,33 @@ export default function Events() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <section className="lg:col-span-2 space-y-5">
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 flex items-center gap-2">
-                    <Calendar className="w-7 h-7 text-indigo-600" />
+                    <Calendar className="w-7 h-7 text-slate-600" />
                     Events
-                  </h1>
-                  <p>
                     <button
                       onClick={() => setShowMyEventsOnly((prev) => !prev)}
-                      className={`px-3 py-1 ml-153  rounded-lg text-sm font-medium transition-colors ${
+                      className={` px-3 py-1 ml-180  rounded-lg text-sm font-stretch-105% transition-colors ${
                         showMyEventsOnly
-                          ? "bg-indigo-500 text-white "
-                          : "bg-indigo-800 text-white "
+                          ? " text-orange-800 hover:text-slate-600  "
+                          : " text-slate-800  hover:text-orange-600 "
                       }`}
                     >
-                      {showMyEventsOnly
-                        ? "Show all events"
-                        : "Show my events only"}
+                      <a>
+                        {showMyEventsOnly ? <ChevronUp /> : <ChevronDown />}
+                      </a>
+                      <a>
+                        {showMyEventsOnly
+                          ? "Show all events"
+                          : "Show my events only"}
+                      </a>
                     </button>
-                  </p>
+                  </h1>
                   <div />
                   <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="md:col-span-2 relative">
@@ -246,7 +258,7 @@ export default function Events() {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Search Events, Event details, location..."
-                        className="w-150 pl-10 pr-10  py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-800"
+                        className="w-150 pl-10 pr-10  py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white text-slate-800"
                       />
                     </div>
                   </div>
@@ -283,14 +295,14 @@ export default function Events() {
                         key={eventKey}
                         href={`/events/${event.eventId ?? ""}`}
                       >
-                        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm transition-shadow duration-200 hover:shadow-md">
+                        <div className="bg-white border mb-4 border-slate-200 rounded-2xl p-5 shadow-sm transition-shadow duration-200 hover:shadow-md">
                           <h2 className="text-xl font-semibold tracking-tight text-slate-900">
                             {event.title}
                           </h2>
                           <div className="ml-auto">
                             <button
                               onClick={() => toggleDropdown(eventKey)}
-                              className="text-gray-500 ml-180 hover:text-gray-700 hover:transition-colors"
+                              className="text-gray-500 ml-270 hover:text-gray-700 hover:transition-colors"
                             >
                               <EllipsisVertical size={24} />
                             </button>
@@ -316,13 +328,13 @@ export default function Events() {
                           </p>
                           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-600">
                             <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                              <User className="w-4 h-4 text-indigo-600" />
+                              <User className="w-4 h-4 text-slate-600" />
                               <span className="font-medium text-slate-700">
                                 {event.organizer || event.User?.username}
                               </span>
                             </div>
                             <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                              <Calendar className="w-4 h-4 text-indigo-600" />
+                              <Calendar className="w-4 h-4 text-slate-600" />
                               <span className="font-medium text-slate-700">
                                 Event on:{" "}
                                 {event.schedules
@@ -338,7 +350,7 @@ export default function Events() {
                                   </span>
                                 )}
                                 {event.fee && (
-                                  <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-indigo-700">
+                                  <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-slate-700">
                                     Fee: {event.fee}
                                   </span>
                                 )}
@@ -387,7 +399,7 @@ export default function Events() {
                   value={form.title}
                   onChange={handleInput}
                   placeholder="Event title"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
                 />
 
@@ -396,7 +408,7 @@ export default function Events() {
                   value={form.organizer}
                   onChange={handleInput}
                   placeholder="Organizer name"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
 
                 <textarea
@@ -405,7 +417,7 @@ export default function Events() {
                   onChange={handleInput}
                   placeholder="Event description"
                   rows={3}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
                 />
 
                 <input
@@ -413,7 +425,7 @@ export default function Events() {
                   value={form.location}
                   onChange={handleInput}
                   placeholder="Location"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
 
                 <input
@@ -421,7 +433,7 @@ export default function Events() {
                   value={form.fee}
                   onChange={handleInput}
                   placeholder="Fee (optional)"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
 
                 <div className="space-y-1">
@@ -443,7 +455,7 @@ export default function Events() {
                           : undefined,
                       }))
                     }
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                   />
                 </div>

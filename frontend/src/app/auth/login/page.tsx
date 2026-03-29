@@ -100,7 +100,7 @@ export default function Login() {
     >
       <div className="w-1/2 bg-white/10 backdrop-blur-md flex items-center justify-center m-4 rounded-3xl border border-white/30 shadow-2xl">
         <div className="text-center space-y-6 p-8">
-          <div className="w-32 h-32 mx-auto bg-linear-to-br from-violet-400 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition">
+          <div className="w-32 h-32 mx-auto bg-linear-to-br from-gray-400 to-slate-600 rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition">
             <img
               src="../img/campuslogo.png"
               alt="Campus Connect Logo"
@@ -119,7 +119,7 @@ export default function Login() {
       <div className="w-1/2 bg-white/95 backdrop-blur-sm flex flex-col rounded-3xl m-4 shadow-2xl">
         <div className="px-8 pt-6 pb-4">
           <Link href="/">
-            <button className="text-gray-700 hover:text-violet-600 flex items-center gap-2 transition font-medium">
+            <button className="text-gray-700 hover:text-slate-600 flex items-center gap-2 transition font-medium">
               <ArrowLeft className="w-5 h-5" />
               Back to Home
             </button>
@@ -127,11 +127,11 @@ export default function Login() {
         </div>
 
         <div className="flex-1 px-12 pb-8">
-          <div className="bg-linear-to-br from-violet-500 to-purple-600 p-8 text-center mb-8 rounded-3xl shadow-xl">
+          <div className="bg-linear-to-br from-orange-500 to-slate-600 p-8 text-center mb-8 rounded-3xl shadow-xl">
             <h1 className="text-4xl font-bold text-white tracking-wide">
-              Welcome Back! 👋
+              Welcome Back! 
             </h1>
-            <p className="text-violet-100 text-base mt-3">
+            <p className="text-slate-100 text-base mt-3">
               Sign in to continue to Campus Connect
             </p>
           </div>
@@ -148,7 +148,7 @@ export default function Login() {
           )}
 
           <div className="grid mb-6">
-            <button className="flex items-center justify-center gap-3 bg-white border-2 border-gray-300 px-6 py-4 rounded-xl hover:shadow-xl hover:border-violet-400 transition transform hover:scale-[1.02]">
+            <button className="flex items-center justify-center gap-3 bg-white border-2 border-gray-300 px-6 py-4 rounded-xl hover:shadow-xl hover:border-orange-400 transition transform hover:scale-[1.02]">
               <svg className="w-6 h-6" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
@@ -193,7 +193,7 @@ export default function Login() {
                   placeholder="you@example.com"
                   className={`w-full pl-12 pr-4 py-4 rounded-xl bg-white outline-none border-2 ${
                     errors.email ? "border-red-400" : "border-gray-300"
-                  } shadow-sm focus:border-violet-500 focus:ring-4 focus:ring-violet-100 transition`}
+                  } shadow-sm focus:border-orange-500 focus:ring-4 focus:ring-violet-100 transition`}
                   name="email"
                   value={values.email}
                   onChange={handleInputChange}
@@ -216,7 +216,7 @@ export default function Login() {
                   placeholder="••••••••"
                   className={`w-full pl-12 pr-12 py-4 rounded-xl bg-white outline-none border-2 ${
                     errors.password ? "border-red-400" : "border-gray-300"
-                  } shadow-sm focus:border-violet-500 focus:ring-4 focus:ring-violet-100 transition`}
+                  } shadow-sm focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition`}
                   name="password"
                   value={values.password}
                   onChange={handleInputChange}
@@ -253,7 +253,7 @@ export default function Login() {
                 </span>
               </label>
               <Link href="/forgot-password">
-                <span className="text-sm text-violet-600 hover:text-violet-800 font-bold cursor-pointer">
+                <span className="text-sm text-gray-600 hover:text-gray-800 font-bold cursor-pointer">
                   Forgot password?
                 </span>
               </Link>
@@ -262,7 +262,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-linear-to-r from-violet-500 to-purple-600 text-white font-bold py-4 rounded-xl hover:from-violet-600 hover:to-purple-700 transform hover:scale-[1.02] transition shadow-xl hover:shadow-2xl ${
+              className={`w-full bg-linear-to-r from-slate-500 to-orange-600 text-white font-bold py-4 rounded-xl hover:from-slate-600 hover:to-orange-700 transform hover:scale-[1.02] transition shadow-xl hover:shadow-2xl ${
                 loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
@@ -273,7 +273,7 @@ export default function Login() {
           <p className="text-center text-gray-600 text-sm mt-6">
             Don't have an account?{" "}
             <Link href="../auth/register">
-              <span className="text-violet-600 hover:text-violet-800 font-bold cursor-pointer">
+              <span className="text-slate-600 hover:text-orange-800 font-bold cursor-pointer">
                 Create one now
               </span>
             </Link>

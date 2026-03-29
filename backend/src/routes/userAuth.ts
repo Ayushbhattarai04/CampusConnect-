@@ -1,6 +1,6 @@
 import express from "express";
 import { register, login, getUsers } from "../controllers/userAuth";
-import { authenticateToken } from "../middleware/userAuth";
+import { authenticateToken , authorizeAdmin} from "../middleware/userAuth";
 import User from "../models/User";
 import jwt from "jsonwebtoken";
 const router = express.Router();
@@ -8,9 +8,7 @@ const router = express.Router();
 // Public routes
 router.post("/register", register);
 router.post("/login", login);
-router.get("/users", getUsers);
-
-
+router.get("/users", authenticateToken, authorizeAdmin, getUsers);
 
 router.get("/verify/:token", async (req, res) => {
   try {
@@ -30,5 +28,6 @@ router.get("/verify/:token", async (req, res) => {
     res.status(400).send("Invalid or expired link");
   }
 });
+
 
 export default router;

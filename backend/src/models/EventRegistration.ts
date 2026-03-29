@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/database";
 import User from "./User";
+import Events from "./Events";
 
 interface EventRegistrationAttributes {
   registrationId?: number;
@@ -46,8 +47,8 @@ EventRegistration.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: User,
-        key: "id",
+        model: Events,
+        key: "eventid",
       },
       onDelete: "CASCADE",
     },
@@ -90,13 +91,7 @@ EventRegistration.init(
   },
 );
 
-EventRegistration.belongsTo(User, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-});
-EventRegistration.belongsTo(User, {
-  foreignKey: "eventId",
-  onDelete: "CASCADE",
-});
+EventRegistration.belongsTo(Events, { foreignKey: "eventId" });
+EventRegistration.belongsTo(User, { foreignKey: "userId" });
 
 export default EventRegistration;

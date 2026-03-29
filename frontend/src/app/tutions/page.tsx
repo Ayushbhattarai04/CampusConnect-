@@ -210,19 +210,19 @@ export default function TutionPage() {
   };
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <section className="lg:col-span-2 space-y-5">
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 flex items-center gap-2">
-                    <BookOpen className="w-7 h-7 text-indigo-600" />
+                    <BookOpen className="w-7 h-7 text-slate-600" />
                     Tution Hub
                   </h1>
                   <p className="text-slate-600 mt-1">Find trusted tutors.</p>
                 </div>
-                <span className="text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-full">
+                <span className="text-sm font-medium text-slate-700 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full">
                   {filteredTutions.length} available
                 </span>
               </div>
@@ -234,7 +234,7 @@ export default function TutionPage() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search tutor, subject, location..."
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-800"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white text-slate-800"
                   />
                 </div>
               </div>
@@ -260,6 +260,17 @@ export default function TutionPage() {
                     }
                     className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
                   >
+                    {String(item.userId) === String(currentUserId) && (
+                      <button
+                        onClick={() => {
+                          const id = item.tutionId ?? item.id;
+                          if (id) handleDeleteTution(id);
+                        }}
+                        className="mt-2   ml-270 rounded-lg text-red-700  text-xs font-medium hover:text-red-600 transition-colors"
+                      >
+                         Delete
+                      </button>
+                    )}
                     <div className="flex items-start justify-between gap-4 flex-wrap">
                       <div>
                         <h2 className="text-lg font-semibold text-slate-900">
@@ -286,15 +297,15 @@ export default function TutionPage() {
 
                     <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-slate-700">
                       <p className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-indigo-600" />
+                        <MapPin className="w-4 h-4 text-slate-600" />
                         {item.location}
                       </p>
                       <p className="flex items-center gap-2">
-                        <Wallet className="w-4 h-4 text-indigo-600" />
+                        <Wallet className="w-4 h-4 text-slate-600" />
                         {item.fee}
                       </p>
                       <p className="flex items-center gap-2">
-                        <Clock3 className="w-4 h-4 text-indigo-600" />
+                        <Clock3 className="w-4 h-4 text-slate-600" />
                         {item.schedules
                           ? new Date(item.schedules).toLocaleTimeString(
                               undefined,
@@ -310,20 +321,8 @@ export default function TutionPage() {
                     <p className="mt-4 text-slate-600 text-sm leading-relaxed">
                       {item.description}
                     </p>
-                    {String(item.userId) === String(currentUserId) && (
-                      <button
-                        onClick={() => {
-                          const id = item.tutionId ?? item.id;
-                          if (id) handleDeleteTution(id);
-                        }}
-                        className="mt-2 px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-medium hover:bg-red-600 transition-colors"
-                      >
-                        <Delete className="w-3.5 h-3.5 inline" /> Delete
-                      </button>
-                    )}
-                    <button className="mt-4 ml-10 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors">
-                      Contact Tutor
-                    </button>
+                    
+                    
                   </article>
                 ))
               ) : (

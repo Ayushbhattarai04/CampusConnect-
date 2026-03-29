@@ -327,17 +327,18 @@ const Feed = () => {
               >
                 {/* USER */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
+                  <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold cursor-pointer">
                     {post.User?.username?.charAt(0).toUpperCase() ||
                       post.username?.charAt(0).toUpperCase() ||
                       "U"}
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">
+                    <button className="font-semibold text-gray-900 cursor-pointer"
+                    >
                       {post.User?.username ||
                         post.username ||
                         `User ${post.userId}`}
-                    </p>
+                    </button>
                     <p className="text-sm text-gray-500">
                       {post.createdAt
                         ? new Date(post.createdAt).toLocaleString()

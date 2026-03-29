@@ -14,7 +14,7 @@ export const register = async (req: Request, res: Response) => {
     if (!username || !email || !password) {
       return res
         .status(400)
-        .json({ message: "Username, email, and password are required" });
+        .json({ error: "Username, email, and password are required" });
     }
 
     // Check if user exists
@@ -25,7 +25,7 @@ export const register = async (req: Request, res: Response) => {
     if (existingUser) {
       return res
         .status(400)
-        .json({ message: "User already exists with this email" });
+        .json({ error: "User already exists with this email" });
     }
 
     // Check username
@@ -34,7 +34,7 @@ export const register = async (req: Request, res: Response) => {
     });
 
     if (existingUsername) {
-      return res.status(400).json({ message: "Username already taken" });
+      return res.status(400).json({ error: "Username already taken" });
     }
 
     // Create user inside transaction
@@ -64,40 +64,53 @@ export const register = async (req: Request, res: Response) => {
       { expiresIn: "1d" },
     );
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: Number(process.env.EMAIL_PORT),
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
     const verificationUrl = `http://localhost:5000/api/auth/verify/${verificationToken}`;
-    await transporter.sendMail({
-      to: user.email,
-      subject: "Verify your email",
-      html: `<a href="${verificationUrl}">Click here to verify your email</a>`,
-    });
+
+    const emailConfigured =
+      !!process.env.EMAIL_USER &&
+      !!process.env.EMAIL_PASS &&
+      !!process.env.EMAIL_PORT;
+
+    if (emailConfigured) {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: Number(process.env.EMAIL_PORT),
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        to: user.email,
+        subject: "Verify your email",
+        html: `<a href="${verificationUrl}">Click here to verify your email</a>`,
+      });
+    } else {
+      await user.update({ verified: true }, { transaction: t });
+    }
 
     await t.commit();
     res.status(201).json({
-      message:
-        "Registration successful! Check your email to verify your account.",
+      message: emailConfigured
+        ? "Registration successful! Check your email to verify your account."
+        : "Registration successful! Email verification is not configured, so your account was auto-verified.",
       token: verificationToken,
+      verificationUrl,
       user: {
         id: user.id,
         username: user.username,
         email: user.email,
         institution: user.institution,
         studId: user.studId,
+        role: user.role,
       },
     });
   } catch (error) {
     await t.rollback();
     console.error("Registration error:", error);
-    res.status(500).json({ message: "Registration failed. Please try again." });
+    res.status(500).json({ error: "Registration failed. Please try again." });
   }
 };
 
@@ -134,7 +147,7 @@ export const login = async (req: Request, res: Response) => {
 
     // Generate token
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET!,
       { expiresIn: "7d" },
     );
@@ -148,6 +161,7 @@ export const login = async (req: Request, res: Response) => {
         email: user.email,
         institution: user.institution,
         studId: user.studId,
+        role: user.role,
       },
     });
   } catch (error) {

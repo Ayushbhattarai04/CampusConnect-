@@ -33,8 +33,8 @@ export default function Home() {
           >
             {selectedSection === "Feed" && <Feed />}
             {selectedSection === "Communities" && <Community />}
-            {selectedSection === "Events" && <Events/>}
-            {selectedSection === "Chat" && <Chat/>}
+            {selectedSection === "Events" && <Events />}
+            {selectedSection === "Chat" && <Chat />}
             {selectedSection === "Tution" && <Tution />}
             {selectedSection === "Career" && <Career />}
             {selectedSection === "Settings" && <Setting />}

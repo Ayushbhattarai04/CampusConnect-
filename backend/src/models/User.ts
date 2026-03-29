@@ -9,12 +9,13 @@ interface UserAttributes {
   institution?: string | null;
   studId?: string | null;
   password: string;
+  role: "user" | "college" | "admin";
   verified: boolean;
 }
 
 interface UserCreationAttributes extends Optional<
   UserAttributes,
-  "id" | "institution" | "studId" | "verified"
+  "id" | "institution" | "studId" | "verified" | "role"
 > {}
 
 class User
@@ -28,6 +29,7 @@ class User
   public studId!: string | null;
   public password!: string;
   public verified!: boolean;
+  public role!: "user" | "college" | "admin";
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -68,6 +70,11 @@ User.init(
     password: {
       type: DataTypes.STRING(255),
       allowNull: false,
+    },
+    role: {
+      type: DataTypes.ENUM("user", "college", "admin"),
+      allowNull: false,
+      defaultValue: "user",
     },
     verified: {
       type: DataTypes.BOOLEAN,
