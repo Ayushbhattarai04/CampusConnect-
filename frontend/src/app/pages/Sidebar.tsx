@@ -7,99 +7,83 @@ import {
   Calendar,
   BookOpen,
   Briefcase,
-  LogOut,
 } from "lucide-react";
-import Setting from "../setting/page";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { title } from "process";
 
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
-  onSelectSection?: (section: string) => void;
 }
 
-export default function Sidebar({
-  open,
-  onClose,
-  onSelectSection,
-}: SidebarProps) {
+export default function Sidebar({ open, onClose }: SidebarProps) {
+  const pathname = usePathname();
+
+  const items = [
+    { label: "Feed", href: "/feed", Icon: Home, title: "Feed" },
+    {
+      label: "Communities",
+      href: "/communities",
+      Icon: Users,
+      title: "Communities",
+    },
+    { label: "Events", href: "/events", Icon: Calendar, title: "Events" },
+    { label: "Chat", href: "/chat", Icon: MessageCircle, title: "Chat" },
+    { label: "Tution", href: "/tutions", Icon: BookOpen, title: "Tution" },
+    { label: "Career", href: "/career", Icon: Briefcase, title: "Career" },
+  ] as const;
+
+  const isActive = (href: string) => {
+    if (!pathname) return false;
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
   return (
     <aside
-      className={`border-gray-900 bg-slate-100 shadow-lg z-2 pb-265flex flex-col transition-all duration-500 ${open ? "w-53 " : "w-16"} fixed top-15 left-0 h-screen overflow-hidden`}
+      className={`border-gray-900 bg-slate-100 shadow-lg z-2 pb-265flex flex-col transition-all duration-500 ${open ? "w-57 " : "w-16"} fixed top-18 left-0 h-screen overflow-hidden`}
     >
+      <div>
+        {open && (
+          <a className="text-bg font-monrope tracking-tighter m-1">Connect</a>
+        )}
+      </div>
       <ul className="space-y-11 mt-10 pl-3 pr-2">
-        <li
-          className="flex items-center cursor-pointer  text-slate-600 hover:text-orange-600 px-2"
-          onClick={() => {
-            if (typeof onSelectSection === "function") onSelectSection("Feed");
-          }}
-        >
-          <Home className="h-6 w-6" />
-          {open && <span className="ml-3">Feed</span>}
-        </li>
-        <li
-          className="flex items-center cursor-pointer text-slate-600 hover:text-orange-600 px-2 "
-          onClick={() => {
-            if (typeof onSelectSection === "function")
-              onSelectSection("Communities");
-          }}
-        >
-          <Users className="h-6 w-6" />
-          {open && <span className="ml-3">Communities</span>}
-        </li>
-        <li
-          className="flex items-center cursor-pointer text-slate-600 hover:text-orange-600 px-2"
-          onClick={() => {
-            if (typeof onSelectSection === "function")
-              onSelectSection("Events");
-          }}
-        >
-          <Calendar className="h-6 w-6" />
-          {open && <span className="ml-3">Events</span>}
-        </li>
-        <li
-          className="flex items-center cursor-pointer text-slate-600 hover:text-orange-600 px-2"
-          onClick={() => {
-            if (typeof onSelectSection === "function") onSelectSection("Chat");
-          }}
-        >
-          <MessageCircle className="h-6 w-6" />
-          {open && <span className="ml-3">Chat</span>}
-        </li>
-        <li
-          className="flex items-center cursor-pointer text-slate-600 hover:text-orange-600 px-2"
-          onClick={() => {
-            if (typeof onSelectSection === "function")
-              onSelectSection("Tution");
-          }}
-        >
-          <BookOpen className="h-6 w-6 " />
-          {open && <span className="ml-3">Tution</span>}
-        </li>
-        <li
-          className="flex items-center cursor-pointer text-slate-600 hover:text-orange-600 px-2"
-          onClick={() => {
-            if (typeof onSelectSection === "function")
-              onSelectSection("Career");
-          }}
-        >
-          <Briefcase className="h-6 w-6" />
-          {open && <span className="ml-3">Career</span>}
-        </li>
+        {items.map(({ label, href, Icon }) => (
+          <li key={href}>
+            <Link
+              href={href}
+              onClick={onClose}
+              className={`flex items-center cursor-pointer px-2  hover:text-orange-600 ${
+                isActive(href) ? "text-orange-600" : "text-slate-600"
+              }`}
+              aria-current={isActive(href) ? "page" : undefined}
+            >
+              <Icon className="h-6 w-6" />
+              {open && <span className="ml-3">{label}</span>}
+            </Link>
+          </li>
+        ))}
 
-        <li
-          className="flex items-center cursor-pointer text-slate-600 hover:text-orange-600 px-2 mt-70"
-          onClick={() => {
-            if (typeof onSelectSection === "function")
-              onSelectSection("Settings");
-          }}
-        >
-          <Settings className="h-6 w-6" />
-          {open && <span className="ml-3">Settings</span>}
+        <li className="mt-70">
+          <Link
+            href="/setting"
+            onClick={onClose}
+            className={`flex items-center cursor-pointer px-2 hover:text-orange-600 ${
+              isActive("/setting") ? "text-orange-600" : "text-slate-600"
+            }`}
+            aria-current={isActive("/setting") ? "page" : undefined}
+          >
+            <Settings className="h-6 w-6" />
+            {open && <span className="ml-3">Settings</span>}
+          </Link>
         </li>
         {open && (
-          <li className="mt-30">
-            <h6 className="text-slate-600 text-sm hover:underline"> © Campus Connect 2026</h6>
+          <li className="mt-25">
+            <h6 className="text-slate-600 text-sm hover:underline">
+              {" "}
+              © Campus Connect 2026
+            </h6>
           </li>
         )}
       </ul>

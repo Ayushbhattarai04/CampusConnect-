@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const community_1 = require("../controllers/community");
+const router = (0, express_1.Router)();
+router.post("/", community_1.createCommunity);
+router.get("/", community_1.getAllCommunities);
+router.get("/:id", community_1.getCommunityById);
+router.put("/:id", community_1.updateCommunity);
+router.post("/:id/join", community_1.joinCommunity);
+router.get("/:id/membership/:userId", community_1.getCommunityMembershipStatus);
+exports.default = router;

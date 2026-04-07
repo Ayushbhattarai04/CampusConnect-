@@ -10,6 +10,7 @@ import {
   Wallet,
   Delete,
 } from "lucide-react";
+import AppShell from "../pages/AppShell";
 
 type Tuition = {
   tutionId?: number;
@@ -209,214 +210,214 @@ export default function TutionPage() {
     }
   };
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <section className="lg:col-span-2 space-y-5">
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 flex items-center gap-2">
-                    <BookOpen className="w-7 h-7 text-slate-600" />
-                    Tution Hub
-                  </h1>
-                  <p className="text-slate-600 mt-1">Find trusted tutors.</p>
+    <AppShell>
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <section className="lg:col-span-2 space-y-5">
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 flex items-center gap-2">
+                      <BookOpen className="w-7 h-7 text-slate-600" />
+                      Tution Hub
+                    </h1>
+                    <p className="text-slate-600 mt-1">Find trusted tutors.</p>
+                  </div>
+                  <span className="text-sm font-medium text-slate-700 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full">
+                    {filteredTutions.length} available
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-slate-700 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full">
-                  {filteredTutions.length} available
-                </span>
+
+                <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="md:col-span-2 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Search tutor, subject, location..."
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white text-slate-800"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="md:col-span-2 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search tutor, subject, location..."
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white text-slate-800"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
-                  {error}
-                </div>
-              )}
-              {loading ? (
-                <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-600 shadow-sm">
-                  Loading tuitions...
-                </div>
-              ) : filteredTutions.length > 0 ? (
-                filteredTutions.map((item, index) => (
-                  <article
-                    key={
-                      item.tutionId ??
-                      item.id ??
-                      `${item.userId}-${item.subject}-${item.schedules ?? "no-schedule"}-${index}`
-                    }
-                    className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
-                  >
-                    {String(item.userId) === String(currentUserId) && (
-                      <button
-                        onClick={() => {
-                          const id = item.tutionId ?? item.id;
-                          if (id) handleDeleteTution(id);
-                        }}
-                        className="mt-2   ml-270 rounded-lg text-red-700  text-xs font-medium hover:text-red-600 transition-colors"
-                      >
-                         Delete
-                      </button>
-                    )}
-                    <div className="flex items-start justify-between gap-4 flex-wrap">
-                      <div>
-                        <h2 className="text-lg font-semibold text-slate-900">
-                          {item.subject}
-                        </h2>
-                        <p className="text-sm text-slate-600 mt-0.5 flex items-center gap-1.5">
-                          <UserRound className="w-4 h-4" />
-                          {item.tutor}
-                        </p>
-                      </div>
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full border border-slate-200 bg-slate-100 text-slate-700">
-                        {item.schedules
-                          ? new Date(item.schedules).toLocaleDateString(
-                              undefined,
-                              {
-                                weekday: "short",
-                                month: "short",
-                                day: "numeric",
-                              },
-                            )
-                          : "No date"}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-slate-700">
-                      <p className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-slate-600" />
-                        {item.location}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Wallet className="w-4 h-4 text-slate-600" />
-                        {item.fee}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Clock3 className="w-4 h-4 text-slate-600" />
-                        {item.schedules
-                          ? new Date(item.schedules).toLocaleTimeString(
-                              undefined,
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              },
-                            )
-                          : "No time"}
-                      </p>
-                    </div>
-
-                    <p className="mt-4 text-slate-600 text-sm leading-relaxed">
-                      {item.description}
-                    </p>
-                    
-                    
-                  </article>
-                ))
-              ) : (
-                <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-600 shadow-sm">
-                  No tution listing found for your search.
-                </div>
-              )}
-            </div>
-          </section>
-          {/* Right side: Create Tution classes */}
-          <aside className="space-y-5">
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-900">
-                Want to become a tutor?
-              </h3>
-              <p className="text-sm text-slate-600 mt-1">
-                Share your learning goal and let students find you.
-              </p>
-
-              <form onSubmit={handleCreateTution} className="space-y-3">
-                {formError && (
-                  <div
-                    className={`p-3 rounded-lg text-sm ${
-                      formError.includes("successfully")
-                        ? "bg-green-50 text-green-700 border border-green-200"
-                        : "bg-red-50 text-red-700 border border-red-200"
-                    }`}
-                  >
-                    {formError}
+              <div className="space-y-4">
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+                    {error}
                   </div>
                 )}
-                <input
-                  name="subject"
-                  value={form.subject}
-                  onChange={handleInput}
-                  placeholder="Subject"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  name="location"
-                  value={form.location}
-                  onChange={handleInput}
-                  placeholder="Preferred location"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  name="fee"
-                  value={form.fee}
-                  onChange={handleInput}
-                  placeholder="Budget (e.g. NPR 1500/week)"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  name="tutor"
-                  value={form.tutor}
-                  onChange={handleInput}
-                  placeholder="Tutor"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <textarea
-                  name="description"
-                  value={form.description}
-                  onChange={handleInput}
-                  placeholder="Description (optional)"
-                  rows={3}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-                />
-                <label htmlFor="schedule" className="text-sm font-medium">
-                  Select Date & Time
-                </label>
-                <input
-                  id="schedule"
-                  type="datetime-local"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                {selectedDate && (
-                  <p className="text-sm text-gray-600">
-                    Chosen Schedule: {new Date(selectedDate).toLocaleString()}
-                  </p>
+                {loading ? (
+                  <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-600 shadow-sm">
+                    Loading tuitions...
+                  </div>
+                ) : filteredTutions.length > 0 ? (
+                  filteredTutions.map((item, index) => (
+                    <article
+                      key={
+                        item.tutionId ??
+                        item.id ??
+                        `${item.userId}-${item.subject}-${item.schedules ?? "no-schedule"}-${index}`
+                      }
+                      className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
+                    >
+                      {String(item.userId) === String(currentUserId) && (
+                        <button
+                          onClick={() => {
+                            const id = item.tutionId ?? item.id;
+                            if (id) handleDeleteTution(id);
+                          }}
+                          className="mt-2   ml-270 rounded-lg text-red-700  text-xs font-medium hover:text-red-600 transition-colors"
+                        >
+                          Delete
+                        </button>
+                      )}
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div>
+                          <h2 className="text-lg font-semibold text-slate-900">
+                            {item.subject}
+                          </h2>
+                          <p className="text-sm text-slate-600 mt-0.5 flex items-center gap-1.5">
+                            <UserRound className="w-4 h-4" />
+                            {item.tutor}
+                          </p>
+                        </div>
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full border border-slate-200 bg-slate-100 text-slate-700">
+                          {item.schedules
+                            ? new Date(item.schedules).toLocaleDateString(
+                                undefined,
+                                {
+                                  weekday: "short",
+                                  month: "short",
+                                  day: "numeric",
+                                },
+                              )
+                            : "No date"}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-slate-700">
+                        <p className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-slate-600" />
+                          {item.location}
+                        </p>
+                        <p className="flex items-center gap-2">
+                          <Wallet className="w-4 h-4 text-slate-600" />
+                          {item.fee}
+                        </p>
+                        <p className="flex items-center gap-2">
+                          <Clock3 className="w-4 h-4 text-slate-600" />
+                          {item.schedules
+                            ? new Date(item.schedules).toLocaleTimeString(
+                                undefined,
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
+                            : "No time"}
+                        </p>
+                      </div>
+
+                      <p className="mt-4 text-slate-600 text-sm leading-relaxed">
+                        {item.description}
+                      </p>
+                    </article>
+                  ))
+                ) : (
+                  <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-600 shadow-sm">
+                    No tution listing found for your search.
+                  </div>
                 )}
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 disabled:bg-slate-400 transition-colors"
-                >
-                  {submitting ? "Posting..." : "Post Request"}
-                </button>
-              </form>
-            </div>
-          </aside>
+              </div>
+            </section>
+            {/* Right side: Create Tution classes */}
+            <aside className="space-y-5">
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Want to become a tutor?
+                </h3>
+                <p className="text-sm text-slate-600 mt-1">
+                  Share your learning goal and let students find you.
+                </p>
+
+                <form onSubmit={handleCreateTution} className="space-y-3">
+                  {formError && (
+                    <div
+                      className={`p-3 rounded-lg text-sm ${
+                        formError.includes("successfully")
+                          ? "bg-green-50 text-green-700 border border-green-200"
+                          : "bg-red-50 text-red-700 border border-red-200"
+                      }`}
+                    >
+                      {formError}
+                    </div>
+                  )}
+                  <input
+                    name="subject"
+                    value={form.subject}
+                    onChange={handleInput}
+                    placeholder="Subject"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <input
+                    name="location"
+                    value={form.location}
+                    onChange={handleInput}
+                    placeholder="Preferred location"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <input
+                    name="fee"
+                    value={form.fee}
+                    onChange={handleInput}
+                    placeholder="Budget (e.g. NPR 1500/week)"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <input
+                    name="tutor"
+                    value={form.tutor}
+                    onChange={handleInput}
+                    placeholder="Tutor"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <textarea
+                    name="description"
+                    value={form.description}
+                    onChange={handleInput}
+                    placeholder="Description (optional)"
+                    rows={3}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                  />
+                  <label htmlFor="schedule" className="text-sm font-medium">
+                    Select Date & Time
+                  </label>
+                  <input
+                    id="schedule"
+                    type="datetime-local"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  {selectedDate && (
+                    <p className="text-sm text-gray-600">
+                      Chosen Schedule: {new Date(selectedDate).toLocaleString()}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 disabled:bg-slate-400 transition-colors"
+                  >
+                    {submitting ? "Posting..." : "Post Request"}
+                  </button>
+                </form>
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 }

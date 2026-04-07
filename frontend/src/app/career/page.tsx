@@ -11,6 +11,7 @@ import {
   EllipsisVertical,
 } from "lucide-react";
 import Link from "next/link";
+import AppShell from "../pages/AppShell";
 
 type Job = {
   jobId: number;
@@ -213,177 +214,180 @@ export default function CareerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left section: Jobs */}
-          <section className="lg:col-span-2 space-y-5">
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 flex items-center gap-2">
-                    <Briefcase className="w-7 h-7 text-slate-600" />
-                    Career Opportunities
-                  </h1>
-                  <p className="text-slate-600 mt-1">
-                    Discover jobs posted by your campus community.
-                  </p>
+    <AppShell>
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left section: Jobs */}
+            <section className="lg:col-span-2 space-y-5">
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 flex items-center gap-2">
+                      <Briefcase className="w-7 h-7 text-slate-600" />
+                      Career Opportunities
+                    </h1>
+                    <p className="text-slate-600 mt-1">
+                      Discover jobs posted by your campus community.
+                    </p>
+                  </div>
+
+                  <div className="relative w-full mx-auto sm:w-80">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Search title, company, location..."
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-800"
+                    />
+                  </div>
                 </div>
+              </div>
 
-                <div className="relative w-full mx-auto sm:w-80">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search title, company, location..."
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-800"
-                  />
+              {loading ? (
+                <div className="bg-white border border-slate-200 rounded-2xl p-10 flex items-center justify-center text-slate-600">
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  Loading jobs...
                 </div>
-              </div>
-            </div>
+              ) : error ? (
+                <div className="bg-white border border-red-200 rounded-2xl p-8 text-center text-red-600">
+                  {"An error occurred while loading jobs."}
+                </div>
+              ) : filteredJobs.length === 0 ? (
+                <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-600">
+                  No jobs found.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {filteredJobs.map((job) => (
+                    <Link key={job.jobId} href={`/career/${job.jobId}`}>
+                      <article className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer">
+                        <div>
+                          {String(job.userId) === String(currentUserId) && (
+                            <EllipsisVertical
+                              className="ml-auto cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleDropdown(job.jobId);
+                              }}
+                            />
+                          )}
+                          <h2 className="text-lg font-semibold text-slate-900">
+                            {job.title}
+                          </h2>
+                        </div>
 
-            {loading ? (
-              <div className="bg-white border border-slate-200 rounded-2xl p-10 flex items-center justify-center text-slate-600">
-                <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                Loading jobs...
-              </div>
-            ) : error ? (
-              <div className="bg-white border border-red-200 rounded-2xl p-8 text-center text-red-600">
-                {"An error occurred while loading jobs."}
-              </div>
-            ) : filteredJobs.length === 0 ? (
-              <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-600">
-                No jobs found.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {filteredJobs.map((job) => (
-                  <Link key={job.jobId} href={`/career/${job.jobId}`}>
-                    <article className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer">
-                      <div>
-                        {String(job.userId) === String(currentUserId) && (
-                          <EllipsisVertical
-                            className="ml-auto cursor-pointer"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              toggleDropdown(job.jobId);
-                            }}
-                          />
-                        )}
-                        <h2 className="text-lg font-semibold text-slate-900">
-                          {job.title}
-                        </h2>
-                      </div>
-
-                      <div className="mt-3 space-y-1.5 text-sm text-slate-600">
-                        <p className="flex items-center gap-2">
-                          <Building2 className="w-4 h-4 text-slate-400" />
-                          {job.company}
-                        </p>
-                        {job.location && (
+                        <div className="mt-3 space-y-1.5 text-sm text-slate-600">
                           <p className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-slate-400" />
-                            {job.location}
+                            <Building2 className="w-4 h-4 text-slate-400" />
+                            {job.company}
+                          </p>
+                          {job.location && (
+                            <p className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-slate-400" />
+                              {job.location}
+                            </p>
+                          )}
+                          {job.salary && (
+                            <p className="flex items-center gap-2">
+                              <Wallet className="w-4 h-4 text-slate-400" />
+                              {job.salary}
+                            </p>
+                          )}
+                        </div>
+
+                        {job.description && (
+                          <p className="mt-4 text-sm text-slate-700 line-clamp-4">
+                            {job.description}
                           </p>
                         )}
-                        {job.salary && (
-                          <p className="flex items-center gap-2">
-                            <Wallet className="w-4 h-4 text-slate-400" />
-                            {job.salary}
-                          </p>
-                        )}
-                      </div>
 
-                      {job.description && (
-                        <p className="mt-4 text-sm text-slate-700 line-clamp-4">
-                          {job.description}
-                        </p>
-                      )}
-
-                      <div className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex justify-between">
-                        <span>
-                          Posted by {job.User?.username || `User ${job.userId}`}
-                        </span>
-                        <span>
-                          {job.createdAt
-                            ? new Date(job.createdAt).toLocaleDateString()
-                            : ""}
-                        </span>
-                      </div>
-                    </article>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* Right: Create Job */}
-          <aside>
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm sticky top-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-1">
-                Post a Job
-              </h3>
-              <p className="text-sm text-slate-600 mb-4">
-                Share opportunities with students and alumni.
-              </p>
-
-              {formError && (
-                <div className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                  {formError}
+                        <div className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex justify-between">
+                          <span>
+                            Posted by{" "}
+                            {job.User?.username || `User ${job.userId}`}
+                          </span>
+                          <span>
+                            {job.createdAt
+                              ? new Date(job.createdAt).toLocaleDateString()
+                              : ""}
+                          </span>
+                        </div>
+                      </article>
+                    </Link>
+                  ))}
                 </div>
               )}
+            </section>
 
-              <form onSubmit={handleCreateJob} className="space-y-3">
-                <input
-                  name="title"
-                  value={form.title}
-                  onChange={handleInput}
-                  placeholder="Job title *"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
-                />
-                <input
-                  name="company"
-                  value={form.company}
-                  onChange={handleInput}
-                  placeholder="Company *"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
-                />
-                <input
-                  name="location"
-                  value={form.location}
-                  onChange={handleInput}
-                  placeholder="Location"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
-                />
-                <input
-                  name="salary"
-                  value={form.salary}
-                  onChange={handleInput}
-                  placeholder="Salary (e.g. NPR 40,000/month)"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
-                />
-                <textarea
-                  name="description"
-                  value={form.description}
-                  onChange={handleInput}
-                  placeholder="Description"
-                  rows={4}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800 resize-none"
-                />
+            {/* Right: Create Job */}
+            <aside>
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm sticky top-6">
+                <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                  Post a Job
+                </h3>
+                <p className="text-sm text-slate-600 mb-4">
+                  Share opportunities with students and alumni.
+                </p>
 
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full py-2.5 rounded-xl bg-gray-900 text-white font-medium hover:bg-gray-700 disabled:bg-indigo-400 transition"
-                >
-                  {submitting ? "Posting..." : "Post Job"}
-                </button>
-              </form>
-            </div>
-          </aside>
+                {formError && (
+                  <div className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                    {formError}
+                  </div>
+                )}
+
+                <form onSubmit={handleCreateJob} className="space-y-3">
+                  <input
+                    name="title"
+                    value={form.title}
+                    onChange={handleInput}
+                    placeholder="Job title *"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
+                  />
+                  <input
+                    name="company"
+                    value={form.company}
+                    onChange={handleInput}
+                    placeholder="Company *"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
+                  />
+                  <input
+                    name="location"
+                    value={form.location}
+                    onChange={handleInput}
+                    placeholder="Location"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
+                  />
+                  <input
+                    name="salary"
+                    value={form.salary}
+                    onChange={handleInput}
+                    placeholder="Salary (e.g. NPR 40,000/month)"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800"
+                  />
+                  <textarea
+                    name="description"
+                    value={form.description}
+                    onChange={handleInput}
+                    placeholder="Description"
+                    rows={4}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800 resize-none"
+                  />
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full py-2.5 rounded-xl bg-gray-900 text-white font-medium hover:bg-gray-700 disabled:bg-indigo-400 transition"
+                  >
+                    {submitting ? "Posting..." : "Post Job"}
+                  </button>
+                </form>
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 }

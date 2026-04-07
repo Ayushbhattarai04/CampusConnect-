@@ -9,6 +9,7 @@ import {
   Building2,
   Hash,
 } from "lucide-react";
+import AppShell from "../pages/AppShell";
 
 interface ProfileData {
   name: string;
@@ -242,235 +243,240 @@ export default function Profile() {
 
   // Fetch users events
 
-
   // if no profile and there's an error, just show the error
   if (!profile) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </div>
-        )}
-      </div>
+      <AppShell>
+        <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+          {error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+        </div>
+      </AppShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <div className="w-full max-w-7xl">
-        <button
-          onClick={() => window.history.back()}
-          className="p-1.5 -ml-1.5 rounded-lg hover:bg-gray-200/60 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 text-gray-500" />
-        </button>
-      </div>
+    <AppShell>
+      <div className="min-h-screen bg-stone-50">
+        <div className="w-full max-w-7xl">
+          <button
+            onClick={() => window.history.back()}
+            className="p-1.5 -ml-1.5 rounded-lg hover:bg-gray-200/60 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
 
-      <div className="max-w-4xl mx-auto px-5 pt-6 pb-16">
-        {error && (
-          <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </div>
-        )}
+        <div className="max-w-4xl mx-auto px-5 pt-6 pb-16">
+          {error && (
+            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
 
-        <div className="bg-stone-50 pt-10 overflow-hidden">
-          <div className="px-6 pb-6">
-            {/* Avatar + actions */}
-            <div className="flex items-end justify-between -mt-9 mb-4">
-              <div className="w-20 h-20 rounded-full bg-slate-900 flex items-center justify-center text-white text-lg font-semibold shadow-md">
-                {profile.profilepic || initials}
+          <div className="bg-stone-50 pt-10 overflow-hidden">
+            <div className="px-6 pb-6">
+              {/* Avatar + actions */}
+              <div className="flex items-end justify-between -mt-9 mb-4">
+                <div className="w-20 h-20 rounded-full bg-slate-900 flex items-center justify-center text-white text-lg font-semibold shadow-md">
+                  {profile.profilepic || initials}
+                </div>
+
+                {!editing ? (
+                  <button
+                    onClick={() => setEditing(true)}
+                    className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium border border-gray-200 text-slate-900 rounded-xl hover:bg-stone-50 transition-all"
+                  >
+                    <PenLine className="w-3.5 h-3.5" />
+                    Edit
+                  </button>
+                ) : (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleCancel}
+                      className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium border border-gray-200 text-gray-500 rounded-xl hover:bg-stone-50 transition-all"
+                    >
+                      <X className="w-3.5 h-3.5" /> Cancel
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium bg-slate-900 text-white rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      {saving ? "Saving..." : "Save"}
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {!editing ? (
-                <button
-                  onClick={() => setEditing(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium border border-gray-200 text-slate-900 rounded-xl hover:bg-stone-50 transition-all"
-                >
-                  <PenLine className="w-3.5 h-3.5" />
-                  Edit
-                </button>
+              {/* Name + username */}
+              {editing ? (
+                <div className="space-y-2 mb-3">
+                  <input
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/30"
+                    value={draft.name}
+                    onChange={(e) =>
+                      setDraft({ ...draft, name: e.target.value })
+                    }
+                    placeholder="Username"
+                  />
+                </div>
               ) : (
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleCancel}
-                    className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium border border-gray-200 text-gray-500 rounded-xl hover:bg-stone-50 transition-all"
-                  >
-                    <X className="w-3.5 h-3.5" /> Cancel
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium bg-slate-900 text-white rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                    {saving ? "Saving..." : "Save"}
-                  </button>
+                <div className="mb-3">
+                  <h1 className="text-lg font-semibold text-slate-900">
+                    {profile.name || "—"}
+                  </h1>
+                  <p className="text-sm text-gray-400">
+                    @{profile.username || "—"}
+                  </p>
                 </div>
               )}
-            </div>
 
-            {/* Name + username */}
-            {editing ? (
-              <div className="space-y-2 mb-3">
-                <input
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/30"
-                  value={draft.name}
-                  onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                  placeholder="Username"
+              {/* Bio */}
+              {editing ? (
+                <textarea
+                  className="w-full mb-5 px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/30 resize-none h-20"
+                  value={draft.bio}
+                  onChange={(e) => setDraft({ ...draft, bio: e.target.value })}
+                  placeholder="Short bio..."
+                />
+              ) : (
+                <p className="text-sm text-gray-500 leading-relaxed mb-5">
+                  {profile.bio || (
+                    <span className="italic text-gray-400">No bio</span>
+                  )}
+                </p>
+              )}
+
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-400 mb-4">
+                Details
+              </h2>
+
+              <div className="space-y-0.5">
+                <DetailField
+                  icon={Mail}
+                  label="Email"
+                  value={draft.email}
+                  display={profile.email}
+                  editing={editing}
+                  onChange={(v) => setDraft({ ...draft, email: v })}
+                />
+                <DetailField
+                  icon={Building2}
+                  label="Institution"
+                  value={draft.institution}
+                  display={profile.institution}
+                  editing={editing}
+                  onChange={(v) => setDraft({ ...draft, institution: v })}
+                />
+                <DetailField
+                  icon={Hash}
+                  label="Student ID"
+                  value={draft.studId}
+                  display={profile.studId}
+                  editing={editing}
+                  onChange={(v) => setDraft({ ...draft, studId: v })}
+                  mono
                 />
               </div>
-            ) : (
-              <div className="mb-3">
-                <h1 className="text-lg font-semibold text-slate-900">
-                  {profile.name || "—"}
-                </h1>
-                <p className="text-sm text-gray-400">
-                  @{profile.username || "—"}
-                </p>
-              </div>
-            )}
-
-            {/* Bio */}
-            {editing ? (
-              <textarea
-                className="w-full mb-5 px-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/30 resize-none h-20"
-                value={draft.bio}
-                onChange={(e) => setDraft({ ...draft, bio: e.target.value })}
-                placeholder="Short bio..."
-              />
-            ) : (
-              <p className="text-sm text-gray-500 leading-relaxed mb-5">
-                {profile.bio || (
-                  <span className="italic text-gray-400">No bio</span>
-                )}
-              </p>
-            )}
-
-            <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-400 mb-4">
-              Details
-            </h2>
-
-            <div className="space-y-0.5">
-              <DetailField
-                icon={Mail}
-                label="Email"
-                value={draft.email}
-                display={profile.email}
-                editing={editing}
-                onChange={(v) => setDraft({ ...draft, email: v })}
-              />
-              <DetailField
-                icon={Building2}
-                label="Institution"
-                value={draft.institution}
-                display={profile.institution}
-                editing={editing}
-                onChange={(v) => setDraft({ ...draft, institution: v })}
-              />
-              <DetailField
-                icon={Hash}
-                label="Student ID"
-                value={draft.studId}
-                display={profile.studId}
-                editing={editing}
-                onChange={(v) => setDraft({ ...draft, studId: v })}
-                mono
-              />
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="w-full max-w-380 mx-auto border-b border-gray-400 border" />
+        <div className="w-full max-w-380 mx-auto border-b border-gray-400 border" />
 
-      {/* Tabs — fixed active state */}
-      <div className="mt-5 mx-auto max-w-7xl bg-stone-50">
-        {tabs.map((tab) => (
-          <label key={tab} className="text-xl m-20 text-gray-500">
-            <button
-              onClick={() => setActiveTab(tab)}
-              className={`transition-all duration-300 ${
-                activeTab === tab
-                  ? "text-orange-500 text-2xl"
-                  : "hover:text-orange-400"
-              }`}
-            >
-              {tab}
-            </button>
-          </label>
-        ))}
-      </div>
+        {/* Tabs — fixed active state */}
+        <div className="mt-5 mx-auto max-w-7xl bg-stone-50">
+          {tabs.map((tab) => (
+            <label key={tab} className="text-xl m-20 text-gray-500">
+              <button
+                onClick={() => setActiveTab(tab)}
+                className={`transition-all duration-300 ${
+                  activeTab === tab
+                    ? "text-orange-500 text-2xl"
+                    : "hover:text-orange-400"
+                }`}
+              >
+                {tab}
+              </button>
+            </label>
+          ))}
+        </div>
 
-      {/* Tab Content */}
-      <div className="max-w-4xl mx-auto px-5 pb-16">
-        {activeTab === "Posts" && (
-          <div className="mt-6 space-y-4">
-            {postsLoading && (
-              <div className="flex items-center justify-center py-10">
-                <div className="w-7 h-7 border-2 border-gray-200 border-t-orange-400 rounded-full animate-spin" />
-              </div>
-            )}
+        {/* Tab Content */}
+        <div className="max-w-4xl mx-auto px-5 pb-16">
+          {activeTab === "Posts" && (
+            <div className="mt-6 space-y-4">
+              {postsLoading && (
+                <div className="flex items-center justify-center py-10">
+                  <div className="w-7 h-7 border-2 border-gray-200 border-t-orange-400 rounded-full animate-spin" />
+                </div>
+              )}
 
-            {!postsLoading && postsError && (
-              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-                {postsError}
-              </div>
-            )}
+              {!postsLoading && postsError && (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                  {postsError}
+                </div>
+              )}
 
-            {!postsLoading && !postsError && posts.length === 0 && (
-              <div className="rounded-xl border border-gray-200 bg-white px-4 py-6 text-sm text-gray-500 text-center">
-                No posts yet.
-              </div>
-            )}
+              {!postsLoading && !postsError && posts.length === 0 && (
+                <div className="rounded-xl border border-gray-200 bg-white px-4 py-6 text-sm text-gray-500 text-center">
+                  No posts yet.
+                </div>
+              )}
 
-            {!postsLoading &&
-              !postsError &&
-              posts.map((post) => {
-                const postUsername =
-                  post.User?.username || profile?.username || "User";
-                const avatarLetter =
-                  postUsername?.charAt(0)?.toUpperCase?.() || "U";
+              {!postsLoading &&
+                !postsError &&
+                posts.map((post) => {
+                  const postUsername =
+                    post.User?.username || profile?.username || "User";
+                  const avatarLetter =
+                    postUsername?.charAt(0)?.toUpperCase?.() || "U";
 
-                return (
-                  <div
-                    key={post.postId}
-                    className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold">
-                        {avatarLetter}
+                  return (
+                    <div
+                      key={post.postId}
+                      className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold">
+                          {avatarLetter}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            {postUsername}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {post.createdAt
+                              ? new Date(post.createdAt).toLocaleString()
+                              : ""}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-gray-900">
-                          {postUsername}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {post.createdAt
-                            ? new Date(post.createdAt).toLocaleString()
-                            : ""}
-                        </p>
-                      </div>
+
+                      <p className="text-sm text-gray-800 whitespace-pre-line">
+                        {post.content}
+                      </p>
+
+                      {post.imageUrl && (
+                        <img
+                          src={post.imageUrl}
+                          alt="Post image"
+                          className="mt-4 w-full max-h-105 object-cover rounded-xl border border-gray-100"
+                        />
+                      )}
                     </div>
-
-                    <p className="text-sm text-gray-800 whitespace-pre-line">
-                      {post.content}
-                    </p>
-
-                    {post.imageUrl && (
-                      <img
-                        src={post.imageUrl}
-                        alt="Post image"
-                        className="mt-4 w-full max-h-105 object-cover rounded-xl border border-gray-100"
-                      />
-                    )}
-                  </div>
-                );
-              })}
-          </div>
-        )}
+                  );
+                })}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </AppShell>
   );
 }
 

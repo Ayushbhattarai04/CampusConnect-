@@ -8,6 +8,10 @@ import "./models/Comments";
 import "./models/Profile";
 import "./models/EventRegistration";
 import "./models/JobApplied";
+import "./models/Communities";
+import "./models/CommunityMember";
+import "./models/CommunityPosts";
+import "./models/CommunityJoinRequest";
 
 import express from "express";
 import cors from "cors";
@@ -23,6 +27,8 @@ import eventsRoutes from "./routes/events";
 import profileRoutes from "./routes/profile";
 import eventRegistrationRoutes from "./routes/eventregistration";
 import jobAppliedRoutes from "./routes/jobappllied";
+import communityRoutes from "./routes/community";
+import CommunityPostRoutes from "./routes/communityPosts";
 
 dotenv.config();
 
@@ -49,7 +55,8 @@ app.use("/api/events", eventsRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/event-registration", eventRegistrationRoutes);
 app.use("/api/job-applications", jobAppliedRoutes);
-
+app.use("/api/communities", communityRoutes);
+app.use("/api/community-posts", CommunityPostRoutes);
 // Test route
 app.get("/", (req, res) => {
   res.json({ message: "Auth API is running" });

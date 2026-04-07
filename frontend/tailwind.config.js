@@ -3,7 +3,13 @@ module.exports = {
   darkMode: "class",
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        heading: ["var(--font-heading)"],
+        body: ["var(--font-body)"],
+        manrope: ["var(--font-manrope)"],
+      },
+    },
   },
   plugins: [],
 };
